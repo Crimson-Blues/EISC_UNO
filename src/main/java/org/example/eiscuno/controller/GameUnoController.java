@@ -13,6 +13,8 @@ import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 
+import java.util.Objects;
+
 /**
  * Controller class for the Uno game.
  */
@@ -70,20 +72,40 @@ public class GameUnoController {
     private void printCardsHumanPlayer() {
         this.gridPaneCardsPlayer.getChildren().clear();
         Card[] currentVisibleCardsHumanPlayer = this.gameUno.getCurrentVisibleCardsHumanPlayer(this.posInitCardToShow);
+        Card currentCardOnTable = null;
+
+        //Controlando excepcion
+        try {
+            currentCardOnTable = this.table.getCurrentCardOnTheTable();
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Mesa vacía. Iniciando juego...");
+        }
 
         for (int i = 0; i < currentVisibleCardsHumanPlayer.length; i++) {
             Card card = currentVisibleCardsHumanPlayer[i];
             ImageView cardImageView = card.getCard();
 
+            // Validar si la carta es jugable
+            boolean isPlayable = isCardPlayable(card, currentCardOnTable);
+
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
                 // Aqui deberian verificar si pueden en la tabla jugar esa carta
-                gameUno.playCard(card);
-                tableImageView.setImage(card.getImage());
-                humanPlayer.removeCard(findPosCardsHumanPlayer(card));
-                printCardsHumanPlayer();
-                threadPlayMachine.setHasPlayerPlayed(true);
+                if (isPlayable) {
+                    if (Objects.equals(card.getValue(), "EAT4")) {
+                        gameUno.eatCard(machinePlayer, 4);
+                        System.out.println("- La maquina come 4 cartas");
+                    }
+                    if (Objects.equals(card.getValue(), "EAT2")) {
+                        gameUno.eatCard(machinePlayer, 2);
+                        System.out.println("- La maquina come 2 cartas");
+                    }
+                    gameUno.playCard(card);
+                    tableImageView.setImage(card.getImage());
+                    humanPlayer.removeCard(findPosCardsHumanPlayer(card));
+                    printCardsHumanPlayer();
+                    threadPlayMachine.setHasPlayerPlayed(true);
+                }
             });
-
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
     }
@@ -148,4 +170,22 @@ public class GameUnoController {
     void onHandleUno(ActionEvent event) {
         // Implement logic to handle Uno event here
     }
+
+    private boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
+        // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
+        if (currentCardOnTable == null) {
+            return true;
+        }
+
+        // Coincidencia en color o valor
+        boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
+        boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
+
+        // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
+        boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
+                cardToPlay.getValue().equals("EAT4");
+
+        return colorMatch || valueMatch || isSpecialCard;
+    }
+
 }
