@@ -99,6 +99,7 @@ public class GameUnoController {
                         gameUno.eatCard(machinePlayer, 2);
                         System.out.println("- La maquina come 2 cartas");
                     }
+
                     gameUno.playCard(card);
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
@@ -108,6 +109,7 @@ public class GameUnoController {
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
+
     }
 
     /**
