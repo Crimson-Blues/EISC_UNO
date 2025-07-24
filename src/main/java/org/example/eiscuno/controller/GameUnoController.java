@@ -85,11 +85,9 @@ public class GameUnoController {
             Card card = currentVisibleCardsHumanPlayer[i];
             ImageView cardImageView = card.getCard();
 
-            // Validar si la carta es jugable
-            boolean isPlayable = isCardPlayable(card, currentCardOnTable);
-
+            Card finalCurrentCardOnTable = currentCardOnTable;
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
-                // Aqui deberian verificar si pueden en la tabla jugar esa carta
+                boolean isPlayable = isCardPlayable(card, finalCurrentCardOnTable);
                 if (isPlayable) {
                     if (Objects.equals(card.getValue(), "EAT4")) {
                         gameUno.eatCard(machinePlayer, 4);
@@ -104,7 +102,7 @@ public class GameUnoController {
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
                     printCardsHumanPlayer();
-                    threadPlayMachine.setHasPlayerPlayed(true);
+                    //threadPlayMachine.setHasPlayerPlayed(true);
                 }
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
