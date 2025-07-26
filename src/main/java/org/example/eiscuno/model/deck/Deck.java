@@ -1,7 +1,7 @@
 package org.example.eiscuno.model.deck;
 
+import org.example.eiscuno.model.card.*;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
-import org.example.eiscuno.model.card.Card;
 
 import java.util.Collections;
 import java.util.Stack;
@@ -35,11 +35,32 @@ public class Deck {
                     cardEnum.name().equals("FOUR_WILD_DRAW") ||
                     cardEnum.name().equals("WILD")) {
                 Card card = new Card(cardEnum.getFilePath(), getCardValue(cardEnum.name()), getCardColor(cardEnum.name()));
-                deckOfCards.push(card);
+               if(card.getValue() != null) {
+                   switch (card.getValue()) {
+                       case "SKIP":
+                           card.setEffect(new SkipEffect());
+                           break;
+                       case "NEWCOLOR":
+                           card.setEffect(new ColorEffect("GREEN"));
+                           break;
+                       case "EAT2":
+                           card.setEffect(new DrawTwoEffect());
+                           break;
+                       case "EAT4":
+                           card.setEffect(new DrawFourEffect());
+                           break;
+                       case "RESERVE" :
+                           System.out.println("Implementar...");
+                           break;
+                   }
+               }
+               else{System.out.println("Invalid card value");}
+               deckOfCards.push(card);
+               }
             }
-        }
         Collections.shuffle(deckOfCards);
-    }
+        }
+
 
     private String getCardValue(String name) {
         if (name.endsWith("0")){
@@ -62,18 +83,18 @@ public class Deck {
             return "8";
         } else if (name.endsWith("9")){
             return "9";   //VALORES PARA CONTROLAR MAS FACIL LOS CONDICIONALES DE ESTAS CARTAS ESPECIALES
-        } else if (name.endsWith("TWO_WILD_DRAW")) {
+        } else if (name.startsWith("TWO_WILD_DRAW")) {
             return "EAT2";//comer 2
-        } else if (name.endsWith("WILD")) {
+        } else if (name.startsWith("WILD")) {
             return "NEWCOLOR";//cambiar color
-        } else if (name.endsWith("RESERVE")) {
+        } else if (name.startsWith("RESERVE")) {
             return "REVERSE"; //reverse card
-        } else if (name.endsWith("SKIP")) {
+        } else if (name.startsWith("SKIP")) {
             return "SKIP";//bloquear turno
-        } else if (name.endsWith("FOUR_WILD_DRAW")) {
+        } else if (name.startsWith("FOUR_WILD_DRAW")) {
             return "EAT4"; //comer 4
         } else {
-            return null;
+            return "UNKNOWN";
         }
 
     }
@@ -85,10 +106,18 @@ public class Deck {
             return "YELLOW";
         } else if(name.startsWith("BLUE")){
             return "BLUE";
-        } else if(name.startsWith("RED")){
+        } else if(name.startsWith("RED")) {
             return "RED";
+        } else if (name.endsWith("GREEN")) {
+            return "GREEN";//comer 2
+        } else if (name.endsWith("YELLOW")) {
+            return "YELLOW";//cambiar color
+        } else if (name.endsWith("BLUE")) {
+            return "BLUE"; //reverse card
+        } else if (name.endsWith("RED")) {
+            return "RED";//bloquear turno
         } else {
-            return null;
+            return "UNKNOWN";
         }
     }
 

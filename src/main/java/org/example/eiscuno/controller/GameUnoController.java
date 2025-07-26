@@ -88,19 +88,20 @@ public class GameUnoController {
             Card finalCurrentCardOnTable = currentCardOnTable;
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
                 boolean isPlayable = isCardPlayable(card, finalCurrentCardOnTable);
+                System.out.println(isPlayable);
                 if (isPlayable) {
-                    if (Objects.equals(card.getValue(), "EAT4")) {
-                        gameUno.eatCard(machinePlayer, 4);
-                        System.out.println("- La maquina come 4 cartas");
-                    }
-                    if (Objects.equals(card.getValue(), "EAT2")) {
-                        gameUno.eatCard(machinePlayer, 2);
-                        System.out.println("- La maquina come 2 cartas");
-                    }
-
                     gameUno.playCard(card);
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
+
+                    // Aplicar efecto si es una carta especial
+                    if (card.getValue().equals("EAT4") || card.getValue().equals("EAT2") ||
+                            card.getValue().equals("SKIP") || card.getValue().equals("NEWCOLOR")) {
+                                Player targetPlayer = machinePlayer;
+                                card.applyEffect(gameUno, targetPlayer);
+                                System.out.println("Holaaaaaa");
+
+                    }
                     printCardsHumanPlayer();
                     //threadPlayMachine.setHasPlayerPlayed(true);
                 }
@@ -179,7 +180,9 @@ public class GameUnoController {
 
         // Coincidencia en color o valor
         boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
+        System.out.println(colorMatch);
         boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
+        System.out.println(valueMatch);
 
         // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
         boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
