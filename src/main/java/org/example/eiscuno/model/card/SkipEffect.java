@@ -12,7 +12,7 @@ public class SkipEffect implements CardEffect {
     }
 
     @Override
-    public void ChangeColorEffect(String newColor) {
+    public void ChangeColorEffect(Card card, String color) {
         //No hacemos nada aquí con skip effect...
     }
 

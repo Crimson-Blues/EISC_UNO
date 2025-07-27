@@ -12,7 +12,7 @@ public class DrawFourEffect implements CardEffect {
     }
 
     @Override
-    public void ChangeColorEffect(String newColor) {
-        //Cambiar el color
+    public void ChangeColorEffect(Card card, String color) {
+        card.setColor(color);
     }
 }

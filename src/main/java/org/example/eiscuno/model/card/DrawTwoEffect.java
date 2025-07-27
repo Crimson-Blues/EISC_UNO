@@ -13,7 +13,7 @@ public class DrawTwoEffect  implements CardEffect {
     }
 
     @Override
-    public void ChangeColorEffect(String newColor) {
+    public void ChangeColorEffect(Card card, String color) {
         // No hay necesidad de cambiar color.
     }
 }

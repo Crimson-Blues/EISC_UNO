@@ -38,4 +38,8 @@ public class Table {
         }
         return this.cardsTable.get(this.cardsTable.size()-1);
     }
+
+    public Card getpreviousCardOnTheTable() throws IndexOutOfBoundsException {
+        return this.cardsTable.get(this.cardsTable.size()-2);
+    }
 }

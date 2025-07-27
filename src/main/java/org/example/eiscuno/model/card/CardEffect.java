@@ -8,6 +8,6 @@ public interface CardEffect {
     void applyEffect(GameUno game, Player targetPlayer);
 
     // Efecto "NEWCOLOR" (Cambio de color)
-    void ChangeColorEffect(String newColor);
+    void ChangeColorEffect(Card card, String color);
 
 }

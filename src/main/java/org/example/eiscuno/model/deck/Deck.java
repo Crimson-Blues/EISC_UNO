@@ -35,31 +35,32 @@ public class Deck {
                     cardEnum.name().equals("FOUR_WILD_DRAW") ||
                     cardEnum.name().equals("WILD")) {
                 Card card = new Card(cardEnum.getFilePath(), getCardValue(cardEnum.name()), getCardColor(cardEnum.name()));
-               if(card.getValue() != null) {
-                   switch (card.getValue()) {
-                       case "SKIP":
-                           card.setEffect(new SkipEffect());
-                           break;
-                       case "NEWCOLOR":
-                           card.setEffect(new ColorEffect("GREEN"));
-                           break;
-                       case "EAT2":
-                           card.setEffect(new DrawTwoEffect());
-                           break;
-                       case "EAT4":
-                           card.setEffect(new DrawFourEffect());
-                           break;
-                       case "RESERVE" :
-                           System.out.println("Implementar...");
-                           break;
-                   }
-               }
-               else{System.out.println("Invalid card value");}
-               deckOfCards.push(card);
-               }
+            if (card.getValue() != null) {
+                switch (card.getValue()) {
+                    case "SKIP":
+                        card.setEffect(new SkipEffect());
+                        break;
+                    case "NEWCOLOR":
+                        card.setEffect(new ColorEffect("GREEN"));
+                        break;
+                    case "EAT2":
+                        card.setEffect(new DrawTwoEffect());
+                        break;
+                    case "EAT4":
+                        card.setEffect(new DrawFourEffect());
+                        break;
+                }
+            } else {
+                System.out.println("Invalid card value");
             }
-        Collections.shuffle(deckOfCards);
+            deckOfCards.push(card);
         }
+        Collections.shuffle(deckOfCards);
+    }
+}
+
+
+
 
 
     private String getCardValue(String name) {
@@ -116,6 +117,10 @@ public class Deck {
             return "BLUE"; //reverse card
         } else if (name.endsWith("RED")) {
             return "RED";//bloquear turno
+        } else if (name.startsWith("WILD")) {
+                return "GREEN";
+        } else if (name.startsWith("EAT4")) {
+            return "GREEN";
         } else {
             return "UNKNOWN";
         }

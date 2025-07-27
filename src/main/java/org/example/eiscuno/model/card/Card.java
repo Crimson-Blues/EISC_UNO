@@ -1,5 +1,6 @@
 package org.example.eiscuno.model.card;
 
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.example.eiscuno.model.game.GameUno;
@@ -35,8 +36,9 @@ public class Card  {
         this.effect = effect;
     }
 
-    public void getEffect(){
-        System.out.println(effect);
+    public CardEffect getEffect(){
+
+        return effect;
     }
 
     /**
@@ -78,6 +80,9 @@ public class Card  {
         return color;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
 
     // Si ya no tiene un efecto asignado, el efecto será
     public void applyEffect(GameUno game, Player targetPlayer) {

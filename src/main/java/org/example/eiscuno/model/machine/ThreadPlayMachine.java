@@ -26,7 +26,6 @@ public class ThreadPlayMachine extends Thread{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 putCardOnTable();
                 hasPlayerPlayed = false;
             }
