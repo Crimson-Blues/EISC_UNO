@@ -44,9 +44,15 @@ public class GameUno implements IGameUno {
                 machinePlayer.addCard(this.deck.takeCard());
             }
         }
+        putFirstCard();
     }
 
-
+    /**
+     * Verifies is a card satisfy the game rules
+     * @param cardToPlay the card being played
+     * @param currentCardOnTable the card compared to
+     * @return true if it can be played, false if not
+     */
     @Override
     public boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
         // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
@@ -77,6 +83,19 @@ public class GameUno implements IGameUno {
     public void eatCard(Player player, int numberOfCards) {
         for (int i = 0; i < numberOfCards; i++) {
             player.addCard(this.deck.takeCard());
+        }
+    }
+
+    /**
+     * Put the first card on the table
+     */
+    @Override
+    public void putFirstCard(){
+        Card card = this.deck.takeCard();
+        if(!card.getValue().equals("NEWCOLOR") && !card.getValue().equals("EAT4")){
+            playCard(this.deck.takeCard());
+        } else {
+            putFirstCard();
         }
     }
 
