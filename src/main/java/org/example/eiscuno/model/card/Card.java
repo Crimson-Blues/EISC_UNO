@@ -1,8 +1,10 @@
 package org.example.eiscuno.model.card;
 
-import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import org.example.eiscuno.model.cardEffect.CardEffect;
+import org.example.eiscuno.model.cardEffect.CardEffectContext;
+import org.example.eiscuno.model.cardEffect.ICardEffect;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.player.Player;
 
@@ -29,16 +31,16 @@ public class Card  {
         this.color = color;
         this.image = new Image(String.valueOf(getClass().getResource(url)));
         this.cardImageView = createCardImageView();
+        this.effect = new CardEffect();
     }
 
     //Nuevo atributo, su efecto
-    public void setEffect(CardEffect effect) {
-        this.effect = effect;
+    public void setEffect(ICardEffect effect) {
+        this.effect.setCardEffect(effect);
     }
 
-    public CardEffect getEffect(){
-
-        return effect;
+    public ICardEffect getEffect(){
+        return this.effect.getCardEffect();
     }
 
     /**
@@ -85,9 +87,9 @@ public class Card  {
     }
 
     // Si ya no tiene un efecto asignado, el efecto será
-    public void applyEffect(GameUno game, Player targetPlayer) {
+    public void applyEffect(CardEffectContext context) {
         if (effect != null) {
-            effect.applyEffect(game, targetPlayer);
+            effect.applyEffect(context);
         }
     }
 

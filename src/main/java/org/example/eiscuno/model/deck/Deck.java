@@ -3,6 +3,10 @@ package org.example.eiscuno.model.deck;
 import org.example.eiscuno.listener.GameOverListener;
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.*;
+import org.example.eiscuno.model.cardEffect.ColorEffect;
+import org.example.eiscuno.model.cardEffect.DrawFourEffect;
+import org.example.eiscuno.model.cardEffect.DrawTwoEffect;
+import org.example.eiscuno.model.cardEffect.SkipEffect;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.Collections;
@@ -44,7 +48,7 @@ public class Deck {
                         card.setEffect(new SkipEffect());
                         break;
                     case "NEWCOLOR":
-                        card.setEffect(new ColorEffect("GREEN"));
+                        card.setEffect(new ColorEffect());
                         break;
                     case "EAT2":
                         card.setEffect(new DrawTwoEffect());
