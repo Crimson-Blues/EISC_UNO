@@ -5,15 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1ee8ff40-bbdd-4aec-a3d2-cf5cc45130ec" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/controller/WelcomeStageController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/Serializable/ISerializableFileHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/Serializable/SerializableFileHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/planeTextFiles/IPlaneTextFileHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/planeTextFiles/PlaneTextFileHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/view/WelcomeStage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/org/example/eiscuno/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/org/example/eiscuno/welcome-stage.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/controller/GameUnoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/controller/GameUnoController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/game/GameUno.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/game/GameUno.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/game/IGameUno.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/game/IGameUno.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/machine/ThreadPlayMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/machine/ThreadPlayMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/machine/ThreadSingUnoMachine.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/model/machine/ThreadSingUnoMachine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/example/eiscuno/game-uno-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/example/eiscuno/game-uno-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/eiscuno/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,8 +27,9 @@
         <option value="JavaFXApplication" />
         <option value="Enum" />
         <option value="CSS File" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="FxmlFile" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -45,12 +47,12 @@
     &quot;assignee&quot;: &quot;fabiansvc&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Crimson-Blues/EISC_UNO.git",
-    "accountId": "cdd83c87-9655-4cc7-a8c8-0815f036d861"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Crimson-Blues/EISC_UNO.git&quot;,
+    &quot;accountId&quot;: &quot;cdd83c87-9655-4cc7-a8c8-0815f036d861&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -71,7 +73,7 @@
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;Application.HelloApplication.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Main.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -79,21 +81,25 @@
     &quot;git-widget-placeholder&quot;: &quot;jppt&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Hulk1/OneDrive/Escritorio/git/EISC_UNO&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Juanpa/IdeaProjects/EISC_UNO/src/main/resources/org/example/eiscuno/images&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Juanpa\IdeaProjects\EISC_UNO\src\main\resources\org\example\eiscuno\images" />
+      <recent name="C:\Users\Juanpa\IdeaProjects\EISC_UNO\src\main\resources\org\example\eiscuno" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\fsvc1\Coding\eisc-uno\src\main\resources\org\example\eiscuno" />
       <recent name="C:\Users\fsvc1\Coding\eisc-uno\src\main\resources\org\example\eiscuno\images" />
@@ -173,6 +179,7 @@
       <workItem from="1753480331242" duration="11412000" />
       <workItem from="1753573743738" duration="13770000" />
       <workItem from="1753796577685" duration="604000" />
+      <workItem from="1753815177868" duration="4144000" />
     </task>
     <servers />
   </component>
