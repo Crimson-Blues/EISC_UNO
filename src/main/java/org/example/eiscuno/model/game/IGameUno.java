@@ -13,6 +13,8 @@ public interface IGameUno {
      */
     void startGame();
 
+    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable);
+
     /**
      * Makes a player draw a specified number of cards from the deck.
      *

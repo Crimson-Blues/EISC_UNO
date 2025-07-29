@@ -46,6 +46,27 @@ public class GameUno implements IGameUno {
         }
     }
 
+
+    @Override
+    public boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
+        // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
+        if (currentCardOnTable == null) {
+            return true;
+        }
+
+        // Coincidencia en color o valor
+        boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
+        System.out.println(colorMatch);
+        boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
+        System.out.println(valueMatch);
+
+        // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
+        boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
+                cardToPlay.getValue().equals("EAT4");
+
+        return colorMatch || valueMatch || isSpecialCard;
+    }
+
     /**
      * Allows a player to draw a specified number of cards from the deck.
      *

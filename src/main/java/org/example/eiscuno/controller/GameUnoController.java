@@ -16,6 +16,7 @@ import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
+import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.List;
 import java.util.Objects;
@@ -52,7 +53,8 @@ public class GameUnoController {
         initVariables();
         this.gameUno.startGame();
         printCardsHumanPlayer();
-        threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView);
+        printCardsMachinePlayer();
+        threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno);
         threadPlayMachine.start();
 
         threadSingUnoMachine = new ThreadSingUnoMachine(humanPlayer.getCardsPlayer());
@@ -93,7 +95,7 @@ public class GameUnoController {
 
             Card finalCurrentCardOnTable = currentCardOnTable;
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
-                boolean isPlayable = isCardPlayable(card, finalCurrentCardOnTable);
+                boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                 System.out.println(isPlayable);
                 if (isPlayable) {
                     gameUno.playCard(card);
@@ -127,12 +129,30 @@ public class GameUnoController {
                         });
                     }
                     printCardsHumanPlayer();
-                    //threadPlayMachine.setHasPlayerPlayed(true);
+                    threadPlayMachine.setHasPlayerPlayed(true);
                 }
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
 
+    }
+
+
+    /**
+     * Prints the cards of the machine (face down).
+     */
+    void printCardsMachinePlayer(){
+        this.gridPaneCardsMachine.getChildren().clear();
+        int maxCards = Math.min(this.machinePlayer.getCardsPlayer().size(), 4);
+
+        for(int i=0; i < maxCards; i++) {
+            ImageView backCardUno = new ImageView(EISCUnoEnum.CARD_UNO.getFilePath());
+            backCardUno.setY(16);
+            backCardUno.setFitHeight(90);
+            backCardUno.setFitWidth(70);
+
+            this.gridPaneCardsMachine.add(backCardUno, i, 0);
+        }
     }
 
     /**
@@ -194,25 +214,6 @@ public class GameUnoController {
     @FXML
     void onHandleUno(ActionEvent event) {
         // Implement logic to handle Uno event here
-    }
-
-    private boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
-        // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
-        if (currentCardOnTable == null) {
-            return true;
-        }
-
-        // Coincidencia en color o valor
-        boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
-        System.out.println(colorMatch);
-        boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
-        System.out.println(valueMatch);
-
-        // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
-        boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
-                cardToPlay.getValue().equals("EAT4");
-
-        return colorMatch || valueMatch || isSpecialCard;
     }
 
 }
