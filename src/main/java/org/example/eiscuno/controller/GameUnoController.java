@@ -6,10 +6,8 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.card.CardEffect;
-import org.example.eiscuno.model.card.ColorEffect;
+import org.example.eiscuno.model.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
@@ -19,7 +17,6 @@ import org.example.eiscuno.model.table.Table;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -82,11 +79,11 @@ public class GameUnoController {
         Card[] currentVisibleCardsHumanPlayer = this.gameUno.getCurrentVisibleCardsHumanPlayer(this.posInitCardToShow);
         Card currentCardOnTable = null;
 
-        //Controlando excepcion
+        //Controlando excepción
         try {
             currentCardOnTable = this.table.getCurrentCardOnTheTable();
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Mesa vacía. Iniciando juego...");
+            System.out.println("Mesa vacía...");
         }
 
         for (int i = 0; i < currentVisibleCardsHumanPlayer.length; i++) {
@@ -103,30 +100,20 @@ public class GameUnoController {
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
 
                     // Aplicar efecto si es una carta especial
+                    Player targetPlayer = machinePlayer;
                     if (card.getValue().equals("EAT4") || card.getValue().equals("EAT2") ||
                             card.getValue().equals("SKIP")) {
+                        card.applyEffect(new CardEffectContext(gameUno, targetPlayer));
                         if (card.getValue().equals("EAT4")) {
-                            Card previousCard = table.getpreviousCardOnTheTable();
-                            System.out.println("La carta anterior tenia un color de: " + previousCard.getColor());
-                            card.getEffect().ChangeColorEffect(card,previousCard.getColor());
-                            System.out.println(card.getValue());
-                            System.out.println("La carta +4 obtiene el color de: " + card.getColor());
+                            String color = askColor();
+                            card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
                         }
-                        Player targetPlayer = machinePlayer;
-                        card.applyEffect(gameUno, targetPlayer);
+
                     }
 
-                    if (card.getValue().equals("NEWCOLOR")) {    //Mostrar mini-ventana para preguntar el color a cambiar
-                        ChoiceDialog<String> dialog = new ChoiceDialog<>("GREEN", List.of("GREEN", "YELLOW", "BLUE", "RED"));
-                        dialog.setTitle("Cambio de color");
-                        dialog.setHeaderText("Elige un nuevo color");
-                        dialog.setContentText("Color:");
-                        Optional<String> result = dialog.showAndWait();
-                        result.ifPresent(color -> {
-                            System.out.println(card.getColor());
-                            card.getEffect().ChangeColorEffect(card, color); //Obtenemos su efecto, y usamos el metodo change de efecto
-                            System.out.println(card.getColor());
-                        });
+                    if (card.getValue().equals("NEWCOLOR")) {
+                        String color = askColor();
+                        card.applyEffect(new CardEffectContext(card, color));
                     }
                     printCardsHumanPlayer();
                     threadPlayMachine.setHasPlayerPlayed(true);
@@ -137,6 +124,19 @@ public class GameUnoController {
 
     }
 
+    //Mostrar mini-ventana para preguntar el color a cambiar
+    public String askColor (){
+        while (true) {
+            ChoiceDialog<String> dialog = new ChoiceDialog<>("GREEN", List.of("GREEN", "YELLOW", "BLUE", "RED"));
+            dialog.setTitle("Cambio de color");
+            dialog.setHeaderText("Elige un nuevo color");
+            dialog.setContentText("Color:");
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                return result.get();
+            }
+        }
+    }
 
     /**
      * Prints the cards of the machine (face down).
@@ -149,7 +149,7 @@ public class GameUnoController {
             ImageView backCardUno = new ImageView(EISCUnoEnum.CARD_UNO.getFilePath());
             backCardUno.setY(16);
             backCardUno.setFitHeight(90);
-            backCardUno.setFitWidth(70);
+            backCardUno.setFitWidth(60);
 
             this.gridPaneCardsMachine.add(backCardUno, i, 0);
         }

@@ -10,7 +10,6 @@ import org.example.eiscuno.model.table.Table;
  * This class manages the game logic and interactions between players, deck, and the table.
  */
 public class GameUno implements IGameUno {
-
     private Player humanPlayer;
     private Player machinePlayer;
     private Deck deck;
@@ -37,6 +36,7 @@ public class GameUno implements IGameUno {
      */
     @Override
     public void startGame() {
+        //Reparte las cartas iniciales al jugador humano y máquina
         for (int i = 0; i < 10; i++) {
             if (i < 5) {
                 humanPlayer.addCard(this.deck.takeCard());
