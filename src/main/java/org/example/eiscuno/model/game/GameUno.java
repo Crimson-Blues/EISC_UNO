@@ -145,10 +145,19 @@ public class GameUno implements IGameUno {
     /**
      * Checks if the game is over.
      *
-     * @return True if the deck is empty, indicating the game is over; otherwise, false.
+     * @return 0 if the game is not over, 1 if the deck is empty, 2 if the human player has
+     * played all his card or 3 if the machine player has played all his cards.
      */
     @Override
-    public Boolean isGameOver() {
-        return null;
+    public int isGameOver() {
+        if(deck.isEmpty()){
+            return 1;
+        } else if (humanPlayer.getCardsPlayer().isEmpty()) {
+            return 2;
+        } else if (machinePlayer.getCardsPlayer().isEmpty()) {
+            return 3;
+
+        }
+        return 0;
     }
 }

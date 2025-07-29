@@ -1,5 +1,7 @@
 package org.example.eiscuno.model.deck;
 
+import org.example.eiscuno.listener.GameOverListener;
+import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.*;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
@@ -11,6 +13,7 @@ import java.util.Stack;
  */
 public class Deck {
     private Stack<Card> deckOfCards;
+    private GameOverListener gameOverListener;
 
     /**
      * Constructs a new deck of Uno cards and initializes it.
@@ -134,9 +137,29 @@ public class Deck {
      */
     public Card takeCard() {
         if (deckOfCards.isEmpty()) {
+
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver();
+            }
+
             throw new IllegalStateException("No hay más cartas en el mazo.");
+
         }
         return deckOfCards.pop();
+    }
+
+    /**
+     * Sets the listener that will be notified when the game ends.
+     * <p>
+     * This method allows the controller or other components to be informed when the game reaches
+     * a terminal state (e.g., no more cards in the deck or a player wins).
+     * This listener will trigger visual updates such as showing a game-over alert.
+     * </p>
+     *
+     * @param gameOverListener the listener to be notified when the game ends
+     */
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;
     }
 
     /**

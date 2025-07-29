@@ -2,6 +2,7 @@ package org.example.eiscuno.model.machine;
 
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.ImageView;
+import org.example.eiscuno.listener.GameOverListener;
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.game.GameUno;
@@ -17,9 +18,14 @@ public class ThreadPlayMachine extends Thread{
     private ImageView tableImageView;
     private GameUno gameUno;
     private volatile Boolean hasPlayerPlayed;
-    private UnoEventListener listener;
+    private volatile boolean running;
+    private UnoEventListener unoEventListener;
+    private GameOverListener gameOverListener;
 
-
+    /**
+     * Thread responsible for handling the machine player's behavior during the UNO game.
+     * It periodically checks whether the human player has played and, if so, attempts to play a valid card.
+     */
     public ThreadPlayMachine(Table table, Player playerMachine, ImageView tableImageView, GameUno gameUno
     , Player HumanPlayer) {
         this.table = table;
@@ -27,10 +33,18 @@ public class ThreadPlayMachine extends Thread{
         this.tableImageView = tableImageView;
         this.gameUno = gameUno;
         this.hasPlayerPlayed = false;
+        this.running = true;
         this.humanPlayer = HumanPlayer;
     }
+
+
+    /**
+     * Main execution loop of the thread.
+     * Continuously runs while {@code running} is true. If the human player has played,
+     * the machine waits for a short period before attempting to play a card.
+     */
     public void run(){
-        while(true){
+        while(running){
             if(hasPlayerPlayed) {
                 try {
                     Thread.sleep(2000);
@@ -42,9 +56,27 @@ public class ThreadPlayMachine extends Thread{
         }
     }
 
+
+    /**
+     * Stops the execution loop by setting {@code running} to false.
+     */
+    public void stopThread() {
+        running = false;
+    }
+
+    /**
+     * Handles the logic for the machine player to play a card.
+     * Iterates through the machine's hand and plays the first valid card.
+     * Applies the card's effect, updates the UI, and notifies listeners.
+     * If no card can be played, the machine draws a card and tries again recursively.
+     */
     public void putCardOnTable(){
         ArrayList<Card> cards = new ArrayList<>(playerMachine.getCardsPlayer());
         Card cardOnTable = table.getCurrentCardOnTheTable();
+
+        if(gameUno.isGameOver() != 0){
+            return;
+        }
 
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
@@ -78,8 +110,12 @@ public class ThreadPlayMachine extends Thread{
                 tableImageView.setImage(card.getImage());
                 playerMachine.removeCard(i);
 
-                if (listener != null) {
-                    listener.onPlayerForgotToSayUno();
+                if (unoEventListener != null) {
+                    unoEventListener.onPlayerForgotToSayUno();
+                }
+
+                if (gameOverListener != null) {
+                    gameOverListener.onGameOver();
                 }
 
                 return;
@@ -92,14 +128,40 @@ public class ThreadPlayMachine extends Thread{
 
     }
 
+    /**
+     * Sets whether the human player has played their turn.
+     *
+     * @param hasPlayerPlayed true if the human has played, false otherwise
+     */
     public void setHasPlayerPlayed(Boolean hasPlayerPlayed){
         this.hasPlayerPlayed = hasPlayerPlayed;
     }
 
-    public void setUnoEventListener(UnoEventListener listener) {
-        this.listener = listener;
+
+    /**
+     * Sets the listener to be triggered when the machine player should react to a "UNO" event.
+     *
+     * @param unoEventListener the listener to handle UNO-related behavior
+     */
+    public void setUnoEventListener(UnoEventListener unoEventListener) {
+        this.unoEventListener = unoEventListener;
     }
 
+    /**
+     * Sets the listener to be notified when the game ends.
+     *
+     * @param gameOverListener the listener to handle game over behavior
+     */
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;
+    }
+
+
+    /**
+     * Returns whether the human player has played their turn.
+     *
+     * @return true if the human player has played, false otherwise
+     */
     public boolean getHasPlayerPlayed(){
         return hasPlayerPlayed;
     }

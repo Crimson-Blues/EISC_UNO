@@ -3,8 +3,10 @@ package org.example.eiscuno.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -19,6 +21,7 @@ import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Controller class for the Uno game.
@@ -33,6 +36,9 @@ public class GameUnoController {
 
     @FXML
     private ImageView tableImageView;
+
+    @FXML
+    private ImageView deckImageView;
 
     @FXML
     private ImageView deckCards;
@@ -51,6 +57,8 @@ public class GameUnoController {
     private int posInitCardToShow;
     private ThreadPlayMachine threadPlayMachine;
     private ThreadSingUnoMachine  threadSingUnoMachine;
+    private Thread threadSingUno;
+
 
     /**
      * Initializes the controller.
@@ -65,10 +73,12 @@ public class GameUnoController {
         threadPlayMachine.start();
 
         threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
-        Thread thread =  new Thread(threadSingUnoMachine);
-        thread.start();
+        threadSingUno =  new Thread(threadSingUnoMachine);
+        threadSingUno.setDaemon(true);
+        threadSingUno.start();
 
         setUnoListener();
+        setGameOverListener();
         showUnoBotton();
     }
 
@@ -108,7 +118,7 @@ public class GameUnoController {
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
                 boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                 System.out.println(isPlayable);
-                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed()) {
+                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed() && gameUno.isGameOver() == 0) {
                     gameUno.playCard(card);
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
@@ -140,10 +150,25 @@ public class GameUnoController {
                         });
                     }
                     threadSingUnoMachine.setAlreadySangUno(false);
+
                     if(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE")){
                         threadPlayMachine.setHasPlayerPlayed(false);
                     }else{
                         threadPlayMachine.setHasPlayerPlayed(true);
+                    }
+
+                    if(gameUno.isGameOver() != 0){
+                        threadPlayMachine.stopThread();
+                        threadPlayMachine.interrupt();
+
+                        threadSingUnoMachine.stopThread();
+                        threadSingUno.interrupt();
+
+                        showUnoBotton();
+                        printCardsHumanPlayer();
+                        printCardsMachinePlayer();
+
+                        gameHasEndedAlert();
                     }
 
                     printCardsHumanPlayer();
@@ -174,6 +199,12 @@ public class GameUnoController {
         }
     }
 
+    /**
+     * Notifies the controller if the uno button should appear or dissappear and if his functionality should work because
+     * 1) The machine sang uno
+     * 2) The player sang uno
+     * 3) The player no longer has one card
+     */
     private void setUnoListener(){
         threadSingUnoMachine.setUnoEventListener(() -> {
             Platform.runLater(() -> {
@@ -192,8 +223,82 @@ public class GameUnoController {
         });
     }
 
+    /**
+     * Notifies the controller if the game has ended in the turn of the machine (the machine played all his cards) or if the cards ran out
+     */
+    private void setGameOverListener(){
+        threadPlayMachine.setGameOverListener(() -> {
+            Platform.runLater(() -> {
+                if(gameUno.isGameOver() != 0){
+                    threadPlayMachine.stopThread();
+                    threadPlayMachine.interrupt();
+
+                    threadSingUnoMachine.stopThread();
+                    threadSingUno.interrupt();
+
+                    gameHasEndedAlert();
+                }
+            });
+        });
+
+        deck.setGameOverListener(() -> {
+            if(gameUno.isGameOver() != 0){
+                threadPlayMachine.stopThread();
+                threadPlayMachine.interrupt();
+
+                threadSingUnoMachine.stopThread();
+                threadSingUno.interrupt();
+
+                deckImageView.setVisible(false);
+                gameHasEndedAlert();
+            }
+        });
+    }
+
+    /**
+     * Shows a visual alert if the game has ended
+     */
+
+    private void gameHasEndedAlert(){
+        int winner = gameUno.isGameOver();
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("¡Juego terminado!");
+
+        if(winner != 1){
+
+            String winnerName;
+
+            if(winner == 2){
+                winnerName = "Jugador humano";
+            }else{
+                winnerName = "Jugador máquina";
+            }
+
+            alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
+            alert.setContentText("El ganador es el: " + winnerName);
+        }else{
+            alert.setHeaderText("Se acabaron las cartas...  :(");
+            alert.setContentText("No hay ganador. El juego ha terminado");
+        }
+
+
+        ImageView imageView = new ImageView(new Image(getClass().getResource("/org/example/eiscuno/favicon.png").toString()));
+        imageView.setFitWidth(64);
+        imageView.setFitHeight(64);
+        alert.setGraphic(imageView);
+
+        alert.showAndWait();
+
+    }
+
+    /**
+     * Shows the uno button depending on the rules
+     */
+
     private void showUnoBotton(){
-        if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()){
+        if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()
+            && gameUno.isGameOver() == 0){
             unoBotton.setVisible(true);
             unoBotton.setManaged(true);
 
@@ -267,7 +372,7 @@ public class GameUnoController {
                 break;
             }
         }
-        if(!areCardsPlayable){
+        if(!areCardsPlayable && gameUno.isGameOver() == 0){
             gameUno.eatCard(humanPlayer, 1);
             showUnoBotton();
             threadPlayMachine.setHasPlayerPlayed(true);
