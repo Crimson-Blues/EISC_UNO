@@ -1,24 +1,23 @@
 package org.example.eiscuno.controller;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.card.CardEffect;
-import org.example.eiscuno.model.card.ColorEffect;
 import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
+import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -34,6 +33,15 @@ public class GameUnoController {
 
     @FXML
     private ImageView tableImageView;
+
+    @FXML
+    private ImageView deckCards;
+
+    @FXML
+    private Button unoBotton;
+
+    @FXML
+    private ImageView unoImageView;
 
     private Player humanPlayer;
     private Player machinePlayer;
@@ -52,12 +60,16 @@ public class GameUnoController {
         initVariables();
         this.gameUno.startGame();
         printCardsHumanPlayer();
-        threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView);
+        printCardsMachinePlayer();
+        threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
         threadPlayMachine.start();
 
-        threadSingUnoMachine = new ThreadSingUnoMachine(humanPlayer.getCardsPlayer());
+        threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
         Thread thread =  new Thread(threadSingUnoMachine);
         thread.start();
+
+        setUnoListener();
+        showUnoBotton();
     }
 
     /**
@@ -83,6 +95,7 @@ public class GameUnoController {
         //Controlando excepcion
         try {
             currentCardOnTable = this.table.getCurrentCardOnTheTable();
+            tableImageView.setImage(currentCardOnTable.getImage());
         } catch (IndexOutOfBoundsException e) {
             System.out.println("Mesa vacía. Iniciando juego...");
         }
@@ -93,16 +106,16 @@ public class GameUnoController {
 
             Card finalCurrentCardOnTable = currentCardOnTable;
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
-                boolean isPlayable = isCardPlayable(card, finalCurrentCardOnTable);
+                boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                 System.out.println(isPlayable);
-                if (isPlayable) {
+                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed()) {
                     gameUno.playCard(card);
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
 
                     // Aplicar efecto si es una carta especial
                     if (card.getValue().equals("EAT4") || card.getValue().equals("EAT2") ||
-                            card.getValue().equals("SKIP")) {
+                            card.getValue().equals("SKIP") || card.getValue().equals("REVERSE")){
                         if (card.getValue().equals("EAT4")) {
                             Card previousCard = table.getpreviousCardOnTheTable();
                             System.out.println("La carta anterior tenia un color de: " + previousCard.getColor());
@@ -126,12 +139,74 @@ public class GameUnoController {
                             System.out.println(card.getColor());
                         });
                     }
+                    threadSingUnoMachine.setAlreadySangUno(false);
+                    if(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE")){
+                        threadPlayMachine.setHasPlayerPlayed(false);
+                    }else{
+                        threadPlayMachine.setHasPlayerPlayed(true);
+                    }
+
                     printCardsHumanPlayer();
-                    //threadPlayMachine.setHasPlayerPlayed(true);
+                    printCardsMachinePlayer();
+                    showUnoBotton();
                 }
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
+
+    }
+
+
+    /**
+     * Prints the cards of the machine (face down).
+     */
+    private void printCardsMachinePlayer(){
+        this.gridPaneCardsMachine.getChildren().clear();
+        int maxCards = Math.min(this.machinePlayer.getCardsPlayer().size(), 4);
+
+        for(int i=0; i < maxCards; i++) {
+            ImageView backCardUno = new ImageView(EISCUnoEnum.CARD_UNO.getFilePath());
+            backCardUno.setY(16);
+            backCardUno.setFitHeight(90);
+            backCardUno.setFitWidth(70);
+
+            this.gridPaneCardsMachine.add(backCardUno, i, 0);
+        }
+    }
+
+    private void setUnoListener(){
+        threadSingUnoMachine.setUnoEventListener(() -> {
+            Platform.runLater(() -> {
+                showUnoBotton();
+                printCardsHumanPlayer();
+                printCardsMachinePlayer();
+            });
+        });
+
+        threadPlayMachine.setUnoEventListener(() -> {
+            Platform.runLater(() -> {
+                showUnoBotton();
+                printCardsHumanPlayer();
+                printCardsMachinePlayer();
+            });
+        });
+    }
+
+    private void showUnoBotton(){
+        if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()){
+            unoBotton.setVisible(true);
+            unoBotton.setManaged(true);
+
+            unoImageView.setVisible(true);
+            unoImageView.setManaged(true);
+        }else{
+            unoBotton.setVisible(false);
+            unoBotton.setManaged(false);
+
+            unoImageView.setVisible(false);
+            unoImageView.setManaged(false);
+        }
+
 
     }
 
@@ -183,7 +258,21 @@ public class GameUnoController {
      */
     @FXML
     void onHandleTakeCard(ActionEvent event) {
-        // Implement logic to take a card here
+        boolean areCardsPlayable = false;
+
+        for(int i=0; i < this.humanPlayer.getCardsPlayer().size(); i++) {
+            Card card = this.humanPlayer.getCardsPlayer().get(i);
+            if(gameUno.isCardPlayable(card, table.getCurrentCardOnTheTable())){
+                areCardsPlayable = true;
+                break;
+            }
+        }
+        if(!areCardsPlayable){
+            gameUno.eatCard(humanPlayer, 1);
+            showUnoBotton();
+            threadPlayMachine.setHasPlayerPlayed(true);
+            printCardsHumanPlayer();
+        }
     }
 
     /**
@@ -193,26 +282,13 @@ public class GameUnoController {
      */
     @FXML
     void onHandleUno(ActionEvent event) {
-        // Implement logic to handle Uno event here
-    }
+        System.out.println("Cantar UNO presionado");
 
-    private boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
-        // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
-        if (currentCardOnTable == null) {
-            return true;
+        if(humanPlayer.getCardsPlayer().size() == 1  && !threadSingUnoMachine.getAlreadySangUno()){
+            threadSingUnoMachine.setAlreadySangUno(true);
         }
 
-        // Coincidencia en color o valor
-        boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
-        System.out.println(colorMatch);
-        boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
-        System.out.println(valueMatch);
-
-        // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
-        boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
-                cardToPlay.getValue().equals("EAT4");
-
-        return colorMatch || valueMatch || isSpecialCard;
+        showUnoBotton();
     }
 
 }

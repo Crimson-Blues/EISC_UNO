@@ -1,7 +1,9 @@
 package org.example.eiscuno.model.game;
 
 import org.example.eiscuno.model.card.Card;
+import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.player.Player;
+import org.example.eiscuno.model.table.Table;
 
 /**
  * Interface representing the Uno game functionality.
@@ -13,6 +15,15 @@ public interface IGameUno {
      */
     void startGame();
 
+
+    /**
+     * Verifies is a card satisfy the game rules
+     * @param cardToPlay the card being played
+     * @param currentCardOnTable the card compared to
+     * @return true if it can be played, false if not
+     */
+    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable);
+
     /**
      * Makes a player draw a specified number of cards from the deck.
      *
@@ -20,6 +31,12 @@ public interface IGameUno {
      * @param numberOfCards the number of cards to be drawn
      */
     void eatCard(Player player, int numberOfCards);
+
+    /**
+     * Put the first card on the table
+     */
+    void putFirstCard();
+
 
     /**
      * Plays a card in the game, adding it to the table.
