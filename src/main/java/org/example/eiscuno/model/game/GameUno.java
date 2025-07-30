@@ -14,7 +14,7 @@ public class GameUno implements IGameUno {
     private Player machinePlayer;
     private Deck deck;
     private Table table;
-
+    private volatile TurnEnum turn;
 
 
     /**
@@ -30,6 +30,7 @@ public class GameUno implements IGameUno {
         this.machinePlayer = machinePlayer;
         this.deck = deck;
         this.table = table;
+        this.turn = TurnEnum.PLAYER;
     }
 
     /**
@@ -111,6 +112,22 @@ public class GameUno implements IGameUno {
         this.table.addCardOnTheTable(card);
     }
 
+    @Override
+    public void changeTurn() {
+        if(turn ==  TurnEnum.PLAYER) {
+            turn = TurnEnum.MACHINE;
+        } else if(turn ==  TurnEnum.MACHINE) {
+            turn = TurnEnum.PLAYER;
+        }
+    }
+
+    public TurnEnum getTurn() {
+        return turn;
+    }
+    public void setTurn(TurnEnum turn) {
+        this.turn = turn;
+    }
+
     /**
      * Handles the scenario when a player shouts "Uno", forcing the other player to draw a card.
      *
@@ -155,9 +172,9 @@ public class GameUno implements IGameUno {
         if(deck.isEmpty()){
             return GameStateEnum.DECK_EMPTY;
         } else if (humanPlayer.getCardsPlayer().isEmpty()) {
-            return GameStateEnum.PLAYER_LOST;
+            return GameStateEnum.PLAYER_WON;
         } else if (machinePlayer.getCardsPlayer().isEmpty()) {
-            return GameStateEnum.MACHINE_LOST;
+            return GameStateEnum.MACHINE_WON;
 
         }
         return GameStateEnum.GAME_ONGOING;

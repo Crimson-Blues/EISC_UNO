@@ -44,6 +44,11 @@ public interface IGameUno {
     void playCard(Card card);
 
     /**
+     * Changes the state of the game turn
+     */
+    void changeTurn();
+
+    /**
      * Handles the action when a player shouts "Uno".
      *
      * @param playerWhoSang the identifier of the player who shouted "Uno"

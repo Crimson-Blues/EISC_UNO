@@ -8,7 +8,6 @@ public class SkipEffect implements ICardEffect {
 
     @Override
     public void applyEffect(CardEffectContext context) {
-        // No se hace nada, el turno se maneja en el flujo del juego.
         System.out.println("¡Turno saltado para " + context.getTargetPlayer().getTypePlayer() + "!");
     }
 

@@ -15,6 +15,7 @@ import org.example.eiscuno.model.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
+import org.example.eiscuno.model.game.TurnEnum;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
@@ -23,7 +24,6 @@ import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Controller class for the Uno game.
@@ -120,34 +120,35 @@ public class GameUnoController {
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
                 boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                 System.out.println(isPlayable);
-                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed() && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
+                if (isPlayable && gameUno.getTurn() == TurnEnum.PLAYER && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
 
+                    String color = "";
                     // Aplicar efecto si es una carta especial
                     Player targetPlayer = machinePlayer;
-                    if (card.getValue().equals("EAT4") || card.getValue().equals("EAT2") ||
-                            card.getValue().equals("SKIP")) {
-                        card.applyEffect(new CardEffectContext(gameUno, targetPlayer));
-                        if (card.getValue().equals("EAT4")) {
-                            String color = askColor();
-                            card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
-                        }
-
+                    if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
+                        color = askColor();
                     }
-
-                    if (card.getValue().equals("NEWCOLOR")) {
-                        String color = askColor();
-                        card.applyEffect(new CardEffectContext(card, color));
+                    if(card.getEffect()!=null){
+                        card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
+                    }else{
+                        gameUno.changeTurn();
+                        System.out.println("Turn: " + gameUno.getTurn());
                     }
-
                     gameUno.playCard(card);
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
-
                     printCardsHumanPlayer();
-                    threadPlayMachine.setHasPlayerPlayed(true);
                 }
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
+            if(gameUno.isGameOver() != GameStateEnum.GAME_ONGOING){
+                threadPlayMachine.stopThread();
+                threadPlayMachine.interrupt();
+
+                threadSingUnoMachine.stopThread();
+                threadSingUno.interrupt();
+                gameHasEndedAlert();
+            }
         }
 
     }
@@ -252,13 +253,13 @@ public class GameUnoController {
         String winnerName;
 
         switch (gameState) {
-            case PLAYER_LOST:
-                winnerName = "Jugador máquina";
+            case PLAYER_WON:
+                winnerName = "Jugador humano";
                 alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
                 alert.setContentText("El ganador es el: " + winnerName);
                 break;
-            case MACHINE_LOST:
-                winnerName = "Jugador humano";
+            case MACHINE_WON:
+                winnerName = "Jugador máquina";
                 alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
                 alert.setContentText("El ganador es el: " + winnerName);
                 break;
@@ -360,7 +361,7 @@ public class GameUnoController {
         if(!areCardsPlayable && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
             gameUno.eatCard(humanPlayer, 1);
             showUnoBotton();
-            threadPlayMachine.setHasPlayerPlayed(true);
+            gameUno.changeTurn();
             printCardsHumanPlayer();
         }
     }
@@ -379,6 +380,10 @@ public class GameUnoController {
         }
 
         showUnoBotton();
+    }
+
+    ThreadPlayMachine getThreadPlayMachine() {
+        return threadPlayMachine;
     }
 
 }

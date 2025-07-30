@@ -7,6 +7,7 @@ import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
+import org.example.eiscuno.model.game.TurnEnum;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 
@@ -18,7 +19,7 @@ public class ThreadPlayMachine extends Thread {
     private Player humanPlayer;
     private ImageView tableImageView;
     private GameUno gameUno;
-    private volatile boolean hasPlayerPlayed;
+    private volatile TurnEnum turn;
     private volatile boolean running;
     private UnoEventListener unoEventListener;
     private GameOverListener gameOverListener;
@@ -33,7 +34,7 @@ public class ThreadPlayMachine extends Thread {
         this.playerMachine = playerMachine;
         this.tableImageView = tableImageView;
         this.gameUno = gameUno;
-        this.hasPlayerPlayed = false;
+        this.turn = gameUno.getTurn();
         this.running = true;
         this.humanPlayer = HumanPlayer;
     }
@@ -46,7 +47,9 @@ public class ThreadPlayMachine extends Thread {
      */
     public void run() {
         while (running) {
-            if (hasPlayerPlayed) {
+            turn = gameUno.getTurn();
+            if (turn == TurnEnum.MACHINE) {
+                System.out.println("MACHINE TURN!");
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
@@ -70,9 +73,9 @@ public class ThreadPlayMachine extends Thread {
      *
      * @param hasPlayerPlayed true if the human has played, false otherwise
      */
-    public void setHasPlayerPlayed(Boolean hasPlayerPlayed) {
-        this.hasPlayerPlayed = hasPlayerPlayed;
-    }
+    //public void setHasPlayerPlayed(Boolean hasPlayerPlayed) {
+        //this.hasPlayerPlayed = hasPlayerPlayed;
+    //}
 
     /**
      * Handles the logic for the machine player to play a card.
@@ -84,8 +87,6 @@ public class ThreadPlayMachine extends Thread {
         ArrayList<Card> cards = playerMachine.getCardsPlayer();
         Card cardOnTable = table.getCurrentCardOnTheTable();
         boolean machinePlayed = false;
-
-        while (!machinePlayed) {
 
             if (gameUno.isGameOver() != GameStateEnum.GAME_ONGOING) {
                 return;
@@ -106,8 +107,12 @@ public class ThreadPlayMachine extends Thread {
                         card.applyEffect(new CardEffectContext(gameUno, humanPlayer));
                     }
 
+                    if(card.getEffect()==null){
+                        gameUno.changeTurn();
+                    }
+
                     gameUno.playCard(card);
-                    setHasPlayerPlayed(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE"));
+                    //setHasPlayerPlayed(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE"));
 
                     tableImageView.setImage(card.getImage());
                     playerMachine.removeCard(i);
@@ -119,16 +124,17 @@ public class ThreadPlayMachine extends Thread {
                     if (gameOverListener != null) {
                         gameOverListener.onGameOver();
                     }
-
                     //Boolean flag to exit while loop
                     machinePlayed = true;
 
                 }
             }
-            gameUno.eatCard(playerMachine, 1);
-            System.out.println("No hay cartas jugables.");
+            if(!machinePlayed){
+                gameUno.eatCard(playerMachine, 1);
+                gameUno.changeTurn();
+                System.out.println("No hay cartas jugables.");
+            }
 
-        }
     }
 
 
@@ -156,8 +162,8 @@ public class ThreadPlayMachine extends Thread {
      *
      * @return true if the human player has played, false otherwise
      */
-    public boolean getHasPlayerPlayed() {
-        return hasPlayerPlayed;
-    }
+    //public boolean getHasPlayerPlayed() {
+        //return hasPlayerPlayed;
+    //}
 }
 
