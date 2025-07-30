@@ -15,6 +15,8 @@ public class GameUno implements IGameUno {
     private Deck deck;
     private Table table;
 
+
+
     /**
      * Constructs a new GameUno instance.
      *
@@ -91,12 +93,12 @@ public class GameUno implements IGameUno {
      */
     @Override
     public void putFirstCard(){
-        Card card = this.deck.takeCard();
-        if(!card.getValue().equals("NEWCOLOR") && !card.getValue().equals("EAT4")){
-            playCard(this.deck.takeCard());
-        } else {
-            putFirstCard();
+        Card cardToPlay = this.deck.viewCard();
+        while(cardToPlay.getEffect() != null) {
+            this.deck.shuffle();
+            cardToPlay = this.deck.viewCard();
         }
+        playCard(this.deck.takeCard());
     }
 
     /**
@@ -149,15 +151,15 @@ public class GameUno implements IGameUno {
      * played all his card or 3 if the machine player has played all his cards.
      */
     @Override
-    public int isGameOver() {
+    public GameStateEnum isGameOver() {
         if(deck.isEmpty()){
-            return 1;
+            return GameStateEnum.DECK_EMPTY;
         } else if (humanPlayer.getCardsPlayer().isEmpty()) {
-            return 2;
+            return GameStateEnum.PLAYER_LOST;
         } else if (machinePlayer.getCardsPlayer().isEmpty()) {
-            return 3;
+            return GameStateEnum.MACHINE_LOST;
 
         }
-        return 0;
+        return GameStateEnum.GAME_ONGOING;
     }
 }

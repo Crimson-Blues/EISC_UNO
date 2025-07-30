@@ -25,7 +25,6 @@ public class CardEffect {
         }
     }
 
-
     public ICardEffect getCardEffect(){
         return cardEffect;
     }

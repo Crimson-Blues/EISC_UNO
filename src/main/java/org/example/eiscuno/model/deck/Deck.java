@@ -27,6 +27,7 @@ public class Deck {
         initializeDeck();
     }
 
+
     /**
      * Initializes the deck with cards based on the EISCUnoEnum values.
      */
@@ -65,10 +66,6 @@ public class Deck {
         Collections.shuffle(deckOfCards);
     }
 }
-
-
-
-
 
     private String getCardValue(String name) {
         if (name.endsWith("0")){
@@ -150,6 +147,25 @@ public class Deck {
 
         }
         return deckOfCards.pop();
+    }
+
+    /**
+     * Shows card at the top of the deck without taking it out of the deck.
+     *
+     * @return Reference to card from the top of the deck
+     * @throws IllegalStateException if the deck is empty
+     */
+    public Card viewCard() {
+        if (deckOfCards.isEmpty()) {
+            throw new IllegalStateException("No hay cartas en el mazo.");
+
+        }
+
+        return deckOfCards.peek();
+    }
+
+    public void shuffle(){
+        Collections.shuffle(deckOfCards);
     }
 
     /**

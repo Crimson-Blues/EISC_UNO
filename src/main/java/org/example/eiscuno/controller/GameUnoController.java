@@ -13,6 +13,7 @@ import javafx.scene.layout.GridPane;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
+import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
@@ -119,10 +120,7 @@ public class GameUnoController {
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
                 boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                 System.out.println(isPlayable);
-                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed() && gameUno.isGameOver() == 0) {
-                    gameUno.playCard(card);
-                    tableImageView.setImage(card.getImage());
-                    humanPlayer.removeCard(findPosCardsHumanPlayer(card));
+                if (isPlayable && !threadPlayMachine.getHasPlayerPlayed() && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
 
                     // Aplicar efecto si es una carta especial
                     Player targetPlayer = machinePlayer;
@@ -140,6 +138,11 @@ public class GameUnoController {
                         String color = askColor();
                         card.applyEffect(new CardEffectContext(card, color));
                     }
+
+                    gameUno.playCard(card);
+                    tableImageView.setImage(card.getImage());
+                    humanPlayer.removeCard(findPosCardsHumanPlayer(card));
+
                     printCardsHumanPlayer();
                     threadPlayMachine.setHasPlayerPlayed(true);
                 }
@@ -210,7 +213,7 @@ public class GameUnoController {
     private void setGameOverListener(){
         threadPlayMachine.setGameOverListener(() -> {
             Platform.runLater(() -> {
-                if(gameUno.isGameOver() != 0){
+                if(gameUno.isGameOver() != GameStateEnum.GAME_ONGOING){
                     threadPlayMachine.stopThread();
                     threadPlayMachine.interrupt();
 
@@ -223,7 +226,7 @@ public class GameUnoController {
         });
 
         deck.setGameOverListener(() -> {
-            if(gameUno.isGameOver() != 0){
+            if(gameUno.isGameOver() != GameStateEnum.GAME_ONGOING){
                 threadPlayMachine.stopThread();
                 threadPlayMachine.interrupt();
 
@@ -241,28 +244,29 @@ public class GameUnoController {
      */
 
     private void gameHasEndedAlert(){
-        int winner = gameUno.isGameOver();
+        GameStateEnum gameState = gameUno.isGameOver();
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("¡Juego terminado!");
 
-        if(winner != 1){
+        String winnerName;
 
-            String winnerName;
-
-            if(winner == 2){
-                winnerName = "Jugador humano";
-            }else{
+        switch (gameState) {
+            case PLAYER_LOST:
                 winnerName = "Jugador máquina";
-            }
+                alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
+                alert.setContentText("El ganador es el: " + winnerName);
+                break;
+            case MACHINE_LOST:
+                winnerName = "Jugador humano";
+                alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
+                alert.setContentText("El ganador es el: " + winnerName);
+                break;
+            case DECK_EMPTY:
+                alert.setHeaderText("Se acabaron las cartas...  :(");
+                alert.setContentText("No hay ganador. El juego ha terminado");
 
-            alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
-            alert.setContentText("El ganador es el: " + winnerName);
-        }else{
-            alert.setHeaderText("Se acabaron las cartas...  :(");
-            alert.setContentText("No hay ganador. El juego ha terminado");
         }
-
 
         ImageView imageView = new ImageView(new Image(getClass().getResource("/org/example/eiscuno/favicon.png").toString()));
         imageView.setFitWidth(64);
@@ -279,7 +283,7 @@ public class GameUnoController {
 
     private void showUnoBotton(){
         if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()
-            && gameUno.isGameOver() == 0){
+            && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
             unoBotton.setVisible(true);
             unoBotton.setManaged(true);
 
@@ -353,7 +357,7 @@ public class GameUnoController {
                 break;
             }
         }
-        if(!areCardsPlayable && gameUno.isGameOver() == 0){
+        if(!areCardsPlayable && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
             gameUno.eatCard(humanPlayer, 1);
             showUnoBotton();
             threadPlayMachine.setHasPlayerPlayed(true);

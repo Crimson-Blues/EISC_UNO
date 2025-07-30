@@ -1,9 +1,7 @@
 package org.example.eiscuno.model.game;
 
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.player.Player;
-import org.example.eiscuno.model.table.Table;
 
 /**
  * Interface representing the Uno game functionality.
@@ -66,5 +64,5 @@ public interface IGameUno {
      * @return 0 if the game is not over, 1 if the deck is empty, 2 if the human player has
      * played all his card or 3 if the machine player has played all his cards.
      */
-    int isGameOver();
+    GameStateEnum isGameOver();
 }
