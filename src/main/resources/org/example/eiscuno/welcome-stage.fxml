@@ -16,9 +16,9 @@
             <VBox.margin>
                 <Insets bottom="10" />
             </VBox.margin>
-         <image>
-            <Image url="@images/icon1.png" />
-         </image>
+            <image>
+                <Image url="@images/icon1.png" />
+            </image>
         </ImageView>
 
         <Label style="-fx-text-fill: #fff3e0; -fx-font-size: 24px; -fx-font-weight: bold;" />

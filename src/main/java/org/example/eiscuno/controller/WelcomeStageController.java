@@ -16,20 +16,11 @@ import java.util.Stack;
 public class WelcomeStageController {
 
     @FXML
-    private StackPane rootPane;
-    @FXML
-    private Button playButton;
-    @FXML
-    private Button continueButton;
-    @FXML
-    private Button quitButton;
-    @FXML
-    private Button creditsButton;
-    @FXML
     private TextField usernameField;
 
     private String nickName;
     private PlaneTextFileHandler planeTextFileHandler;
+    private Boolean isContinue;
 
     @FXML
     public void initialize() {
@@ -41,7 +32,8 @@ public class WelcomeStageController {
     public void onHandlePlayButton() throws IOException {
         if(!usernameField.getText().isEmpty()) {
             nickName = usernameField.getText();
-            WelcomeStage.deleteInstance();
+            planeTextFileHandler.write("PlayerData.csv", nickName);
+            isContinue = false;
             GameUnoStage.getInstance();
         }
         else {
@@ -55,8 +47,9 @@ public class WelcomeStageController {
     }
 
     @FXML
-    public void onHandleContinueButton(){
-
+    public void onHandleContinueButton() throws IOException {
+        isContinue = true;
+        GameUnoStage.getInstance();
     }
 
     @FXML
@@ -68,5 +61,9 @@ public class WelcomeStageController {
     @FXML
     public void onHandleCreditsButton(){
 
+    }
+
+    public Boolean returnIsContinue(){
+        return this.isContinue;
     }
 }

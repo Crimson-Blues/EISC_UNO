@@ -3,7 +3,9 @@ package org.example.eiscuno.model.card;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.player.Player;
 
-public class DrawFourEffect implements CardEffect {
+import java.io.Serializable;
+
+public class DrawFourEffect implements CardEffect, Serializable {
 
     @Override
     public void applyEffect(GameUno game, Player targetPlayer) {

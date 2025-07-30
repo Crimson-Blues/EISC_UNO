@@ -4,10 +4,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.eiscuno.controller.WelcomeStageController;
 
 import java.io.IOException;
 
 public class WelcomeStage extends Stage{
+
+    WelcomeStageController welcomeStageController;
 
     public WelcomeStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/eiscuno/welcome-stage.fxml"));
@@ -17,12 +20,18 @@ public class WelcomeStage extends Stage{
         }catch(IOException e){
             throw new IOException("Error loading FXML file", e);
         }
+        welcomeStageController = fxmlLoader.getController();
         Scene scene = new Scene(root);
         setTitle("Welcome");
         setScene(scene);
         setResizable(false);
         show();
     }
+
+    public WelcomeStageController getWelcomeStageController() {
+        return this.welcomeStageController;
+    }
+
 
     /**
      * Closes the instance of WelcomeStage.

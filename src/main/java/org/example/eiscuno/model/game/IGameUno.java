@@ -63,7 +63,8 @@ public interface IGameUno {
     /**
      * Checks if the game is over.
      *
-     * @return true if the game is over, false otherwise
+     * @return 0 if the game is not over, 1 if the deck is empty, 2 if the human player has
+     * played all his card or 3 if the machine player has played all his cards.
      */
-    Boolean isGameOver();
+    int isGameOver();
 }

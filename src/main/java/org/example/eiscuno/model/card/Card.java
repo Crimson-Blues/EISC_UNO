@@ -6,15 +6,17 @@ import javafx.scene.image.ImageView;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.player.Player;
 
+import java.io.Serializable;
+
 /**
  * Represents a card in the Uno game.
  */
-public class Card  {
+public class Card implements Serializable {
     private String url;
     private String value;
     private String color;
-    private Image image;
-    private ImageView cardImageView;
+    private transient Image image;
+    private transient ImageView cardImageView;
     private CardEffect effect;
 
     /**
@@ -60,6 +62,10 @@ public class Card  {
      * @return the ImageView of the card
      */
     public ImageView getCard() {
+        if (cardImageView == null || image == null) {
+            this.image = new Image(String.valueOf(getClass().getResource(url)));
+            this.cardImageView = createCardImageView();
+        }
         return cardImageView;
     }
 
@@ -69,6 +75,9 @@ public class Card  {
      * @return the Image of the card
      */
     public Image getImage() {
+        if (image == null) {
+            this.image = new Image(String.valueOf(getClass().getResource(url)));
+        }
         return image;
     }
 

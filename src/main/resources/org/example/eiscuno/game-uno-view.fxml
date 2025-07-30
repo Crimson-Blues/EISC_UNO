@@ -25,7 +25,7 @@
                <children>
                   <Button layoutX="28.0" layoutY="-7.0" mnemonicParsing="false" onAction="#onHandleTakeCard" style="-fx-background-color: transparent;">
                      <graphic>
-                        <ImageView fitHeight="169.0" fitWidth="106.0">
+                        <ImageView fx:id="deckImageView" fitHeight="169.0" fitWidth="106.0">
                            <image>
                               <Image url="@images/Back_card.png" />
                            </image>

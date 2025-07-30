@@ -4,7 +4,9 @@ import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.player.Player;
 
-public class ColorEffect implements CardEffect {
+import java.io.Serializable;
+
+public class ColorEffect implements CardEffect, Serializable {
     private String newColor;
 
     public ColorEffect(String newColor) {
