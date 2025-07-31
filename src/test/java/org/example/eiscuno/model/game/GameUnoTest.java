@@ -3,6 +3,7 @@ package org.example.eiscuno.model.game;
 import javafx.application.Platform;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.deck.Deck;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
@@ -22,7 +23,7 @@ class GameUnoTest {
     }
 
     @Test
-    void testStartGameDealsCorrectly() {
+    void testStartGameDealsCorrectly() throws EmptyDeck {
         Player human = new Player("HUMAN_PLAYER");
         Player machine = new Player("MACHINE_PLAYER");
         Deck deck = new Deck();
@@ -64,7 +65,7 @@ class GameUnoTest {
     }
 
     @Test
-    void testEatCardAddsCards() {
+    void testEatCardAddsCards() throws EmptyDeck {
         Player human = new Player("HUMAN_PLAYER");
         Player machine = new Player("MACHINE_PLAYER");
         Deck deck = new Deck();
