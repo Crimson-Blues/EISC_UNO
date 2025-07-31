@@ -13,6 +13,15 @@ public interface IGameUno {
      */
     void startGame();
 
+
+    /**
+     * Verifies is a card satisfy the game rules
+     * @param cardToPlay the card being played
+     * @param currentCardOnTable the card compared to
+     * @return true if it can be played, false if not
+     */
+    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable);
+
     /**
      * Makes a player draw a specified number of cards from the deck.
      *
@@ -22,11 +31,22 @@ public interface IGameUno {
     void eatCard(Player player, int numberOfCards);
 
     /**
+     * Put the first card on the table
+     */
+    void putFirstCard();
+
+
+    /**
      * Plays a card in the game, adding it to the table.
      *
      * @param card the card to be played
      */
     void playCard(Card card);
+
+    /**
+     * Changes the state of the game turn
+     */
+    void changeTurn();
 
     /**
      * Handles the action when a player shouts "Uno".
@@ -46,7 +66,8 @@ public interface IGameUno {
     /**
      * Checks if the game is over.
      *
-     * @return true if the game is over, false otherwise
+     * @return 0 if the game is not over, 1 if the deck is empty, 2 if the human player has
+     * played all his card or 3 if the machine player has played all his cards.
      */
-    Boolean isGameOver();
+    GameStateEnum isGameOver();
 }

@@ -1,6 +1,12 @@
 package org.example.eiscuno.model.deck;
 
+import org.example.eiscuno.listener.GameOverListener;
+import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.*;
+import org.example.eiscuno.model.cardEffect.ColorEffect;
+import org.example.eiscuno.model.cardEffect.DrawFourEffect;
+import org.example.eiscuno.model.cardEffect.DrawTwoEffect;
+import org.example.eiscuno.model.cardEffect.SkipEffect;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.util.Collections;
@@ -11,6 +17,7 @@ import java.util.Stack;
  */
 public class Deck {
     private Stack<Card> deckOfCards;
+    private GameOverListener gameOverListener;
 
     /**
      * Constructs a new deck of Uno cards and initializes it.
@@ -19,6 +26,7 @@ public class Deck {
         deckOfCards = new Stack<>();
         initializeDeck();
     }
+
 
     /**
      * Initializes the deck with cards based on the EISCUnoEnum values.
@@ -41,7 +49,7 @@ public class Deck {
                         card.setEffect(new SkipEffect());
                         break;
                     case "NEWCOLOR":
-                        card.setEffect(new ColorEffect("GREEN"));
+                        card.setEffect(new ColorEffect());
                         break;
                     case "EAT2":
                         card.setEffect(new DrawTwoEffect());
@@ -58,10 +66,6 @@ public class Deck {
         Collections.shuffle(deckOfCards);
     }
 }
-
-
-
-
 
     private String getCardValue(String name) {
         if (name.endsWith("0")){
@@ -134,9 +138,48 @@ public class Deck {
      */
     public Card takeCard() {
         if (deckOfCards.isEmpty()) {
+
+            if (gameOverListener != null) {
+                gameOverListener.onGameOver();
+            }
+
             throw new IllegalStateException("No hay más cartas en el mazo.");
+
         }
         return deckOfCards.pop();
+    }
+
+    /**
+     * Shows card at the top of the deck without taking it out of the deck.
+     *
+     * @return Reference to card from the top of the deck
+     * @throws IllegalStateException if the deck is empty
+     */
+    public Card viewCard() {
+        if (deckOfCards.isEmpty()) {
+            throw new IllegalStateException("No hay cartas en el mazo.");
+
+        }
+
+        return deckOfCards.peek();
+    }
+
+    public void shuffle(){
+        Collections.shuffle(deckOfCards);
+    }
+
+    /**
+     * Sets the listener that will be notified when the game ends.
+     * <p>
+     * This method allows the controller or other components to be informed when the game reaches
+     * a terminal state (e.g., no more cards in the deck or a player wins).
+     * This listener will trigger visual updates such as showing a game-over alert.
+     * </p>
+     *
+     * @param gameOverListener the listener to be notified when the game ends
+     */
+    public void setGameOverListener(GameOverListener gameOverListener) {
+        this.gameOverListener = gameOverListener;
     }
 
     /**
