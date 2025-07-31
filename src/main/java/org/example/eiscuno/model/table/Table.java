@@ -40,6 +40,12 @@ public class Table implements Serializable{
         return this.cardsTable.get(this.cardsTable.size()-1);
     }
 
+    /**
+     * Retrieves the previous card on the table
+     *
+     * @return The card previously played.
+     * @throws IndexOutOfBoundsException if there are no cards on the table.
+     */
     public Card getpreviousCardOnTheTable() throws IndexOutOfBoundsException {
         return this.cardsTable.get(this.cardsTable.size()-2);
     }

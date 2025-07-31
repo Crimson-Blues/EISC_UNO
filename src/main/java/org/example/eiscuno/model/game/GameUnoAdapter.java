@@ -8,15 +8,59 @@ import org.example.eiscuno.model.table.Table;
 
 import java.io.Serializable;
 
+/**
+ * Abstract adapter class implementing the basic logic and rules of an UNO game.
+ * <p>
+ * This class provides core functionalities such as distributing cards, verifying
+ * if a card is playable, handling turn changes, managing the table state, and
+ * detecting game-ending conditions.
+ * </p>
+ * <p>
+ * It acts as a base for the {@link GameUno} class, encapsulating shared logic
+ * while allowing specific game behaviors to be extended or modified.
+ * </p>
+ *
+ * @see GameUno
+ * @see Player
+ * @see Deck
+ * @see Table
+ * @see Card
+ */
 public abstract class GameUnoAdapter implements IGameUno, Serializable {
 
+    /**
+     * The human player participating in the game.
+     */
     protected Player humanPlayer;
+    /**
+     * The machine-controlled player participating in the game.
+     */
     protected Player machinePlayer;
+    /**
+     * The deck containing all cards to be drawn during the game.
+     */
     protected Deck deck;
+    /**
+     * The table where cards are placed during gameplay.
+     */
     protected Table table;
+    /**
+     * Stores the current color in play (e.g., after a Wild or +4 card is played).
+     */
     protected String currentColor;
+    /**
+     * Indicates whose turn it currently is ({@link TurnEnum#PLAYER} or {@link TurnEnum#MACHINE}).
+     */
     protected volatile TurnEnum turn;
 
+    /**
+     * Constructs a {@code GameUnoAdapter} with the specified players, deck, and table.
+     *
+     * @param humanPlayer   the human player
+     * @param machinePlayer the machine player
+     * @param deck          the deck used in the game
+     * @param table         the table where cards are played
+     */
     public GameUnoAdapter(Player humanPlayer, Player machinePlayer, Deck deck, Table table) {
         this.humanPlayer = humanPlayer;
         this.machinePlayer = machinePlayer;
@@ -28,8 +72,13 @@ public abstract class GameUnoAdapter implements IGameUno, Serializable {
     }
 
     /**
-     * Starts the Uno game by distributing cards to players.
-     * The human player and the machine player each receive 10 cards from the deck.
+     * {@inheritDoc}
+     * <p>
+     * Each player is dealt 10 cards (first 5 to the human player, next 5 to the machine).
+     * The first card is then placed on the table.
+     * </p>
+     *
+     * @throws EmptyDeck if the deck runs out of cards while dealing
      */
     @Override
     public void startGame() throws EmptyDeck {
@@ -84,7 +133,9 @@ public abstract class GameUnoAdapter implements IGameUno, Serializable {
     }
 
     /**
-     * Put the first card on the table
+     * Places the first valid (non-special) card from the deck onto the table.
+     *
+     * @throws EmptyDeck if no cards are available
      */
     @Override
     public void putFirstCard() throws EmptyDeck {
@@ -106,6 +157,9 @@ public abstract class GameUnoAdapter implements IGameUno, Serializable {
         this.table.addCardOnTheTable(card);
     }
 
+    /**
+     * Alternates the turn between {@link TurnEnum#PLAYER} and {@link TurnEnum#MACHINE}.
+     */
     @Override
     public void changeTurn() {
         if(turn ==  TurnEnum.PLAYER) {
@@ -115,9 +169,19 @@ public abstract class GameUnoAdapter implements IGameUno, Serializable {
         }
     }
 
+    /**
+     * Gets the player turn currently active.
+     *
+     * @return the current {@link TurnEnum}
+     */
     public TurnEnum getTurn() {
         return turn;
     }
+    /**
+     * Sets the turn manually.
+     *
+     * @param turn the {@link TurnEnum} to set
+     */
     public void setTurn(TurnEnum turn) {
         this.turn = turn;
     }

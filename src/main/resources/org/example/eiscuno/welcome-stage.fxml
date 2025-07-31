@@ -12,7 +12,7 @@
 <StackPane fx:id="rootPane" prefHeight="650" prefWidth="730" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.eiscuno.controller.WelcomeStageController">
 
     <VBox alignment="CENTER" maxWidth="400" spacing="20">
-        <ImageView fx:id="logoImage" fitWidth="250" preserveRatio="true">
+        <ImageView fx:id="logoImage" fitHeight="211.0" fitWidth="381.0" preserveRatio="true">
             <VBox.margin>
                 <Insets bottom="10" />
             </VBox.margin>

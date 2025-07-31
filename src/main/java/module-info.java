@@ -3,6 +3,7 @@ module org.example.eiscuno {
     requires javafx.fxml;
     requires java.sql;
     requires javafx.graphics;
+    requires org.junit.jupiter.api;
 
 
     opens org.example.eiscuno to javafx.fxml;

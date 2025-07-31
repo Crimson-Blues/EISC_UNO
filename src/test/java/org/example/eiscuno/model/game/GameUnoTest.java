@@ -9,9 +9,7 @@ import org.example.eiscuno.model.table.Table;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import java.util.concurrent.CountDownLatch;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameUnoTest {

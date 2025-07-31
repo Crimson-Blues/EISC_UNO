@@ -7,7 +7,26 @@ import javafx.scene.shape.QuadCurve;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Utility class responsible for drawing composite shapes used in the UNO game interface.
+ * <p>
+ * This class programmatically builds complex shapes using {@link javafx.scene.shape.Shape}
+ * elements grouped in a {@link Group}, which can then be added to a {@link javafx.scene.Scene}.
+ * </p>
+ *
+ * @see Group
+ * @see javafx.scene.shape.Shape
+ * @see javafx.scene.Scene
+ */
 public class ShapeDrawer {
+    /**
+     * Draws a person icon as a {@link Group} composed of {@link Ellipse}, {@link Circle}, and {@link QuadCurve} shapes.
+     * <p>
+     * This method creates a stylized person figure that is used in the game UI to represent the human player.
+     * </p>
+     *
+     * @return a {@link Group} containing the person icon shapes.
+     */
     public Group drawPerson() {
         // Main group
         Group group = new Group();
@@ -52,6 +71,14 @@ public class ShapeDrawer {
         return group;
     }
 
+    /**
+     * Draws a robot icon as a {@link Group} composed of {@link Rectangle}, {@link Circle}, and {@link Line} shapes.
+     * <p>
+     * This method creates a stylized robot figure that is used in the game UI to represent the machine player
+     * </p>
+     *
+     * @return a {@link Group} containing the robot icon shapes.
+     */
     public Group drawRobot() {
         // Main group
         Group group = new Group();

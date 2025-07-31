@@ -45,60 +45,104 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Controller class for the Uno game.
+ * Controller for managing the main Uno game scene.
+ * <p>
+ * Handles player actions, machine actions, game state updates, animations, and event listeners.
+ * </p>
  */
 public class GameUnoController {
+// =============================
+// ======  UI COMPONENTS  ======
+// =============================
 
+    /** GridPane representing the machine player's cards (displayed face down). */
     @FXML
     private GridPane gridPaneCardsMachine;
-
+    /** GridPane representing the human player's cards (displayed face up). */
     @FXML
     private GridPane gridPaneCardsPlayer;
-
+    /** ImageView displaying the current top card on the table. */
     @FXML
     private ImageView tableImageView;
-
+    /** ImageView representing the deck of cards from which players can draw. */
     @FXML
     private ImageView deckImageView;
-
+    /** ImageView used for graphical representation of stacked cards in the deck. */
     @FXML
     private ImageView deckCards;
+    /** Button that appears when the player needs to declare "UNO". */
     @FXML
     private Button unoButton;
+    /** ImageView associated with the UNO button for visual emphasis. */
     @FXML
     private ImageView unoImageView;
+    /** Label used to display temporary error or notification messages to the player. */
     @FXML
     private Label errorLabel;
+    /** Label that shows whose turn it currently is (player or machine). */
     @FXML
     private Label turnLabel;
+    /** Container (HBox) holding the turn label and corresponding player/machine icon. */
     @FXML
     private HBox turnHBox;
+    /** Container (HBox) holding the circle that displays the current card color in play. */
     @FXML
     private HBox colorHBox;
+    /** Circle used as a visual indicator of the active card color (green, yellow, red, or blue). */
     @FXML
     private Circle colorCircle;
 
+    // =============================
+    // =======  GAME LOGIC  ========
+    // =============================
+
+    /** Instance representing the human player in the game. */
     private Player humanPlayer;
+    /** Instance representing the machine (AI) player in the game. */
     private Player machinePlayer;
+    /** The deck object managing all available Uno cards to be drawn. */
     private Deck deck;
+    /** The table object that stores cards played during the game. */
     private Table table;
+    /** Core game logic class controlling turn order, rules, and playable actions. */
     private GameUno gameUno;
+    /** Current starting index of the visible set of cards displayed to the player. */
     private int posInitCardToShow;
+    /** Tracks the currently active color on the table (updated dynamically). */
     private String currentColor;
+    // =============================
+    // ========  THREADING  ========
+    // =============================
+
+    /** Background thread responsible for controlling machine (AI) moves. */
     private ThreadPlayMachine threadPlayMachine;
+    /** Runnable controlling logic for handling "UNO" declarations from the player. */
     private ThreadSingUnoMachine  threadSingUnoMachine;
+    /** Runnable that continuously monitors and updates the currently active color in the game. */
     private ThreadCurrentColorMachine threadCurrentColorMachine;
+    /** Thread instance managing the asynchronous execution of the UNO declaration logic. */
     private Thread threadSingUno;
+    /** Thread instance managing asynchronous execution of color monitoring logic. */
     private Thread threadCurrentColor;
+    // =============================
+    // =======  GAME STATE  ========
+    // =============================
+
+    /** Stores the nickname of the human player, loaded from saved data. */
     private String nickname;
+    /** Serializable object representing a snapshot of the entire game state. */
     private GameState gameState;
+    /** Indicates whether the player is continuing a previously saved game session. */
     private Boolean isContinue;
+    /** Handles serialization and deserialization of the game state for saving/loading. */
     private SerializableFileHandler serializableFileHandler;
+    /** Utility class for reading and writing plain text data, such as player information. */
     private PlaneTextFileHandler planeTextFileHandler;
+    /** Helper class for dynamically drawing shapes (icons for player and machine turns). */
     private ShapeDrawer shapeDrawer = new ShapeDrawer();
 
     /**
-     * Initializes the controller.
+     * Initializes the controller when the FXML scene loads.
      */
     @FXML
     public void initialize() throws IOException {
@@ -181,7 +225,7 @@ public class GameUnoController {
                 try {
                     boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
                     if (!isPlayable) {
-                        throw new NonPlayableCard("Carta inválida");
+                        throw new NonPlayableCard("¡Carta inválida!");
                     }
                     if (gameUno.getTurn() == TurnEnum.PLAYER
                             && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
@@ -220,8 +264,7 @@ public class GameUnoController {
                 }catch (NonPlayableCard e) {
                     showError(errorLabel, e.getMessage());
                 }
-                printCardsHumanPlayer();
-                updateLabels();
+                refreshUI();
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
@@ -229,12 +272,10 @@ public class GameUnoController {
     }
 
     /**
-<<<<<<< HEAD
+
      * Shows a mini windows asking for the color to change
      * @return the new color
-=======
      * Displays a dialog window to ask for a color change for color changing cards.
->>>>>>> origin/master
      */
     public String askColor (){
         while (true) {
@@ -249,6 +290,19 @@ public class GameUnoController {
         }
     }
 
+    /**
+     * Refreshes UI components (cards, UNO button, labels).
+     */
+    private void refreshUI() {
+        printCardsHumanPlayer();
+        printCardsMachinePlayer();
+        updateLabels();
+        showUnoButton();
+    }
+
+    /**
+     * Refreshes UI labels displaying the current player's turn and the current playable color.
+     */
     public void updateLabels(){
         String color = table.getCurrentCardOnTheTable().getColor();
         color = switch (color) {
@@ -290,7 +344,7 @@ public class GameUnoController {
     }
 
     /**
-     * Notifies the controller if the uno button should appear or dissappear and if his functionality should work because
+     * Notifies the controller if the uno button should appear or disappear and if his functionality should work because
      * 1) The machine sang uno
      * 2) The player sang uno
      * 3) The player no longer has one card
@@ -299,39 +353,42 @@ public class GameUnoController {
         threadSingUnoMachine.setUnoEventListener(() -> {
             Platform.runLater(() -> {
                 showUnoButton();
-                printCardsHumanPlayer();
-                printCardsMachinePlayer();
-                updateLabels();
-                showError(errorLabel, "Olvidaste decir UNO!");
+                refreshUI();
+                showError(errorLabel, "¡Olvidaste decir UNO!");
             });
         });
 
-        threadPlayMachine.setUnoEventListener(() -> {
-            Platform.runLater(() -> {
-                showUnoButton();
-                printCardsHumanPlayer();
-                printCardsMachinePlayer();
-                updateLabels();
-            });
-        });
     }
 
+    /**
+     * Notifies the controller if the machinePlayer has made a move, including:
+     * 1) The machine played a valid hard.
+     * 2) The machine had no valid cards to play and drew up a card from the deck.
+     */
     private void setMachineListener(){
         threadPlayMachine.setMachinePlayListener(new MachinePlayListener() {
+            /**
+             * Called when the machine draws a card because it had no playable moves.
+             * This action is performed on the JavaFX Application Thread to safely
+             * update the UI.
+             */
             @Override
             public void onMachineDrewCard() {
                 Platform.runLater(() -> {
-                    showError(errorLabel, "Máquina tomó una carta");
+                    showError(errorLabel, "¡Máquina tomó una carta!");
+                    refreshUI();
                 });
             }
 
+            /**
+             * Called when the machine successfully plays a card onto the table.
+             * Updates the UI to reflect the new state of the table and cards.
+             */
             @Override
             public void onMachinePlayed() {
                 Platform.runLater(() -> {
-                   printCardsHumanPlayer();
-                   printCardsMachinePlayer();
-                   showUnoButton();
-                   updateLabels();
+                    refreshUI();
+                    showUnoButton();
                 });
             }
 
@@ -388,7 +445,6 @@ public class GameUnoController {
     /**
      * Shows a visual alert if the game has ended
      */
-
     private void gameHasEndedAlert(){
         GameStateEnum gameState = gameUno.isGameOver();
 
@@ -424,9 +480,8 @@ public class GameUnoController {
     }
 
     /**
-     * Shows the uno button depending on the rules
+     * Shows the uno button if the game is on going and the human player has one card left.
      */
-
     private void showUnoButton(){
         if(humanPlayer.getCardsPlayer().size() > 1){
             threadSingUnoMachine.setAlreadySangUno(false);
@@ -504,7 +559,7 @@ public class GameUnoController {
             Card card = this.humanPlayer.getCardsPlayer().get(i);
             if(gameUno.isCardPlayable(card, table.getCurrentCardOnTheTable())){
                 areCardsPlayable = true;
-                showError(errorLabel, "Aún tienes jugadas posibles!");
+                showError(errorLabel, "¡Aún tienes jugadas posibles!");
                 break;
             }
         }
@@ -530,6 +585,7 @@ public class GameUnoController {
     @FXML
     void onHandleUno(ActionEvent event) {
         System.out.println("Cantar UNO presionado");
+        showError(errorLabel, "¡Gritaste UNO!");
         threadSingUnoMachine.setAlreadySangUno(true);
         saveGameState();
         showUnoButton();
@@ -580,10 +636,7 @@ public class GameUnoController {
             setUnoListener();
             setGameOverListener();
             setCurrentColorListener();
-            printCardsHumanPlayer();
-            printCardsMachinePlayer();
-            updateLabels();
-
+            refreshUI();
             showUnoButton();
 
         }

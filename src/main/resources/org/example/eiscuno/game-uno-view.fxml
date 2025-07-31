@@ -15,22 +15,22 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.eiscuno.controller.GameUnoController">
+<AnchorPane prefHeight="535.0" prefWidth="742.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.eiscuno.controller.GameUnoController">
    <children>
-      <ImageView fitHeight="521.0" fitWidth="635.0" layoutY="-21.0">
+      <ImageView fitHeight="575.0" fitWidth="747.0" layoutY="-26.0">
          <image>
             <Image url="@images/casino_background.jpg" />
          </image>
       </ImageView>
-      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="635.0" style="-fx-background-color: transparent;">
+      <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="549.0" prefWidth="735.0" style="-fx-background-color: transparent;">
          <left>
             <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
                   <Button layoutX="28.0" layoutY="-7.0" mnemonicParsing="false" onAction="#onHandleTakeCard" style="-fx-background-color: transparent;">
                      <graphic>
-                        <ImageView fx:id="deckImageView" fitHeight="169.0" fitWidth="106.0">
+                        <ImageView fx:id="deckImageView" fitHeight="188.0" fitWidth="164.0" preserveRatio="true">
                            <image>
-                              <Image url="@images/Back_card.png" />
+                              <Image url="@cards-uno/deck_of_cards.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -41,9 +41,9 @@
          <right>
             <Pane prefHeight="194.0" prefWidth="190.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="unoButton" layoutX="26.0" layoutY="43.0" mnemonicParsing="false" onAction="#onHandleUno" prefHeight="97.0" prefWidth="169.0" style="-fx-background-color: transparent;">
+                  <Button fx:id="unoButton" layoutX="-7.0" layoutY="42.0" mnemonicParsing="false" onAction="#onHandleUno" prefHeight="97.0" prefWidth="169.0" style="-fx-background-color: transparent;">
                      <graphic>
-                        <ImageView fx:id="unoImageView" fitHeight="104.0" fitWidth="154.0" preserveRatio="true">
+                        <ImageView fx:id="unoImageView" fitHeight="106.0" fitWidth="176.0" preserveRatio="true">
                            <image>
                               <Image url="@images/UNO_shout.png" />
                            </image>
@@ -55,14 +55,14 @@
          <center>
             <Pane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="tableImageView" fitHeight="149.0" fitWidth="100.0" layoutX="50.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true" />
+                  <ImageView fx:id="tableImageView" fitHeight="173.0" fitWidth="127.0" layoutX="103.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" />
                </children>
             </Pane>
          </center>
          <top>
-            <AnchorPane BorderPane.alignment="CENTER">
+            <AnchorPane prefHeight="160.0" prefWidth="735.0" BorderPane.alignment="CENTER">
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="106.0" prefWidth="635.0">
+                  <VBox alignment="TOP_CENTER" prefHeight="159.0" prefWidth="735.0" spacing="15.0">
                      <children>
                         <HBox alignment="CENTER" prefHeight="106.0" prefWidth="600.0" spacing="20.0">
                            <children>
@@ -85,15 +85,15 @@
                            <children>
                               <HBox alignment="CENTER" spacing="100.0">
                                  <children>
-                                    <HBox fx:id="turnHBox" alignment="CENTER_LEFT" spacing="10.0">
+                                    <HBox fx:id="turnHBox" alignment="CENTER_LEFT" spacing="10.0" styleClass="welcome-text" stylesheets="@styles.css">
                                        <children>
                                           <Label fx:id="turnLabel" styleClass="general-label" stylesheets="@styles.css" text="Turno:" />
                                        </children>
                                     </HBox>
-                                    <HBox fx:id="colorHBox" alignment="CENTER" spacing="10.0">
+                                    <HBox fx:id="colorHBox" alignment="CENTER" spacing="10.0" styleClass="welcome-text" stylesheets="@styles.css">
                                        <children>
                                           <Label fx:id="colorLabel" styleClass="general-label" stylesheets="@styles.css" text="Color:" />
-                                          <Circle fx:id="colorCircle" fill="DODGERBLUE" radius="13.0" stroke="BLACK" strokeType="INSIDE" />
+                                          <Circle fx:id="colorCircle" fill="DODGERBLUE" radius="13.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
                                        </children>
                                     </HBox>
                                  </children>

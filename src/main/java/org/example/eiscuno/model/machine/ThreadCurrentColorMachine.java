@@ -4,12 +4,33 @@ import org.example.eiscuno.listener.CurrentColorListener;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.table.Table;
 
+/**
+ * Class {@code ThreadCurrentColorMachine}
+ * <p>
+ * This class represents a separate thread responsible for monitoring and saving
+ * the current color of the top card on the table in an UNO game.
+ * It periodically checks whether the color of the previously played card
+ * differs from the current card and updates the {@link GameUno} state accordingly.
+ * </p>
+ *
+ * <p>If a color change is detected, an optional {@link CurrentColorListener}
+ * can be notified to handle UI or game logic updates.</p>
+ *
+ * @see GameUno
+ * @see Table
+ * @see CurrentColorListener
+ */
 public class ThreadCurrentColorMachine implements Runnable{
 
+    /** Reference to the active UNO game instance for updating the current color. */
     private GameUno gameUno;
+    /** Reference to the game {@link Table}, used to access current and previous cards. */
     private Table table;
+    /** Controls whether this thread should keep running. */
     private volatile boolean running;
+    /** Listener to be triggered whenever the color of the card on the table changes. */
     private CurrentColorListener currentColorListener;
+    /** Ensures that the "first card" message is displayed only once. */
     private boolean firstTextShown;
 
     /**

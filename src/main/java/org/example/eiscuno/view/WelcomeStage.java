@@ -9,10 +9,46 @@ import org.example.eiscuno.controller.WelcomeStageController;
 
 import java.io.IOException;
 
+/**
+ * Represents the welcome window (stage) of the UNO game application.
+ * <p>
+ * This stage is responsible for displaying the initial welcome screen to the user
+ * before starting the game. It loads its layout from an FXML file and assigns the
+ * appropriate controller for managing UI interactions.
+ * </p>
+ *
+ * @see Stage
+ * @see Scene
+ * @see FXMLLoader
+ */
 public class WelcomeStage extends Stage{
 
-    WelcomeStageController welcomeStageController;
+    /**
+     * Controller associated with the welcome stage.
+     * <p>
+     * Provides access to UI logic and event handling defined in
+     * {@code welcome-stage.fxml}.
+     * </p>
+     *
+     * @see WelcomeStageController
+     */
+    private final WelcomeStageController welcomeStageController;
 
+    /**
+     * Constructs a new {@code WelcomeStage} instance.
+     * <p>
+     * This constructor initializes the welcome stage by:
+     * <ul>
+     *     <li>Loading the corresponding FXML layout file via {@link FXMLLoader}</li>
+     *     <li>Retrieving its {@link WelcomeStageController}</li>
+     *     <li>Creating and setting a {@link Scene}</li>
+     *     <li>Applying a window icon using {@link Image}</li>
+     *     <li>Displaying the {@link Stage} immediately</li>
+     * </ul>
+     * </p>
+     *
+     * @throws IOException if there is an error while loading the FXML file or its resources.
+     */
     public WelcomeStage() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/eiscuno/welcome-stage.fxml"));
         Parent root;
@@ -32,6 +68,11 @@ public class WelcomeStage extends Stage{
         show();
     }
 
+    /**
+     * Retrieves the controller associated with the welcome stage.
+     *
+     * @return the {@link WelcomeStageController} managing this {@link Stage}.
+     */
     public WelcomeStageController getWelcomeStageController() {
         return this.welcomeStageController;
     }

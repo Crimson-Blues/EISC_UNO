@@ -9,11 +9,31 @@ import org.example.eiscuno.model.player.Player;
 
 import java.util.ArrayList;
 
+/**
+ * Class {@code ThreadSingUnoMachine}
+ *
+ * <p>A runnable class representing an automated process that monitors whether
+ * the human player has declared "UNO" after having only one card left.
+ * If the player fails to declare "UNO" within a randomized time interval,
+ * a penalty card is drawn automatically.</p>
+ *
+ * <p>This class is typically run on a separate {@link Thread} to continuously
+ * observe the game state without blocking the main game flow.</p>
+ *
+ * @see GameUno
+ * @see Player
+ * @see UnoEventListener
+ */
 public class ThreadSingUnoMachine implements Runnable{
+    /** Flag indicating whether the player has already declared "UNO". */
     private volatile boolean alreadySangUno;
+    /** Controls whether the monitoring thread is running. */
     private volatile boolean running;
+    /** Reference to the active game logic instance. */
     private GameUno gameUno;
+    /** Reference to the human player being monitored. */
     private Player humanPlayer;
+    /** Optional listener to notify when the player fails to declare "UNO". */
     private UnoEventListener listener;
 
 

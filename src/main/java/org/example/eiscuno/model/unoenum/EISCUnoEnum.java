@@ -67,7 +67,13 @@ public enum EISCUnoEnum {
     RED_8("cards-uno/8_red.png"),
     RED_9("cards-uno/9_red.png");
 
+    /**
+     * The resolved path to the image file, prefixed by the base resource path.
+     */
     private final String filePath;
+    /**
+     * Base path for all image resources in the game.
+     */
     private static final String PATH = "/org/example/eiscuno/";
 
     /**

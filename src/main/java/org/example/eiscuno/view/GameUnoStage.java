@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.example.eiscuno.controller.WelcomeStageController;
 
@@ -11,7 +12,10 @@ import java.io.IOException;
 
 /**
  * Represents the main stage of the Uno game application.
- * This stage displays the game interface to the user.
+ * This stage displays the game's main interface to the user.
+ * @see Stage
+ * @see Scene
+ * @see FXMLLoader
  */
 public class GameUnoStage extends Stage {
     /**
@@ -36,6 +40,8 @@ public class GameUnoStage extends Stage {
 
         Scene scene = new Scene(root); // Configuring the stage
         setTitle("EISC Uno"); // Sets the title of the stage
+        getIcons().add(
+                new Image(String.valueOf(getClass().getResource("/org/example/eiscuno/favicon.png"))));
         setScene(scene); // Sets the scene for the stage
         setResizable(false); // Disallows resizing of the stage
         show(); // Displays the stage

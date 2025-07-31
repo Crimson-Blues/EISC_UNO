@@ -16,24 +16,56 @@ import org.example.eiscuno.model.table.Table;
 
 import java.util.*;
 
+/**
+ * Class {@code ThreadPlayMachine}
+ *
+ * <p>Represents a separate thread controlling the behavior of the machine player in the UNO game.
+ * It automatically attempts to play a valid card whenever it is the machine's turn.
+ * If no card can be played, the machine draws a card and passes the turn.</p>
+ *
+ * <p>This class continuously runs while {@link #running} is {@code true} and communicates
+ * with various event listeners to notify about significant events such as machine plays,
+ * drawing cards, or the game ending.</p>
+ *
+ * @see GameUno
+ * @see Player
+ * @see Card
+ * @see MachinePlayListener
+ * @see GameOverListener
+ */
 public class ThreadPlayMachine extends Thread {
+    /** The table where the game is being played, used to check the current top card. */
     private Table table;
+    /** The machine-controlled player. */
     private Player playerMachine;
+    /** The human-controlled player. */
     private Player humanPlayer;
+    /** The {@link ImageView} displaying the top card on the table. */
     private ImageView tableImageView;
+    /** The active {@link GameUno} instance managing game logic. */
     private GameUno gameUno;
+    /** Tracks whose turn it is in the game. */
     private volatile TurnEnum turn;
+    /** Controls whether this thread's execution loop should continue running. */
     private volatile boolean running;
-    private UnoEventListener unoEventListener;
+    /** Optional listener for game-over events. */
     private GameOverListener gameOverListener;
+    /** Holds the current saved state of the game for persistence. */
     private GameState gameState;
+    /** Utility handler for serializing the game state. */
     private SerializableFileHandler serializableFileHandler;
+    /** Listener for notifying when the machine has played or drawn a card. */
     private MachinePlayListener machinePlayListener;
 
 
     /**
-     * Thread responsible for handling the machine player's behavior during the UNO game.
-     * It periodically checks whether the human player has played and, if so, attempts to play a valid card.
+     * Constructs a {@code ThreadPlayMachine} instance.
+     *
+     * @param table         the {@link Table} representing the playing area
+     * @param playerMachine the {@link Player} representing the machine
+     * @param tableImageView the {@link ImageView} for updating the top card display
+     * @param gameUno       the active {@link GameUno} instance
+     * @param HumanPlayer   the {@link Player} representing the human opponent
      */
     public ThreadPlayMachine(Table table, Player playerMachine, ImageView tableImageView, GameUno gameUno
             , Player HumanPlayer) {
@@ -48,9 +80,11 @@ public class ThreadPlayMachine extends Thread {
 
 
     /**
-     * Main execution loop of the thread.
-     * Continuously runs while {@code running} is true. If the human player has played,
-     * the machine waits for a short period before attempting to play a card.
+     * Main execution loop for the machine's behavior.
+     * <p>
+     * Continuously checks if it's the machine's turn. If it is, waits 2 seconds before
+     * attempting to play a valid card via {@link #putCardOnTable()}.
+     * </p>
      */
     public void run() {
         while (running) {
@@ -76,10 +110,16 @@ public class ThreadPlayMachine extends Thread {
     }
 
     /**
-     * Handles the logic for the machine player to play a card.
-     * Iterates through the machine's hand and plays the first valid card.
-     * Applies the card's effect, updates the UI, and notifies listeners.
-     * If no card can be played, the machine draws a card and tries again recursively.
+     * Handles the machine's decision-making process to play a card.
+     * <ul>
+     *     <li>Finds the first playable card in the machine's hand.</li>
+     *     <li>Chooses a random color for wild cards.</li>
+     *     <li>Plays the card and updates the {@link ImageView} table image.</li>
+     *     <li>If no cards can be played, draws one card and passes the turn.</li>
+     * </ul>
+     *
+     * @see GameUno#isCardPlayable(Card, Card)
+     * @see GameUno#eatCard(Player, int)
      */
     public void putCardOnTable() {
         ArrayList<Card> cards = playerMachine.getCardsPlayer();
@@ -99,7 +139,7 @@ public class ThreadPlayMachine extends Thread {
                     Random random = new Random();
                     String chosenColor = colors.get(random.nextInt(colors.size()));
 
-                    System.out.println("[MÁQUINA] Color elegido: " + chosenColor);
+                    System.out.println("Máquina: Color elegido: " + chosenColor);
                     card.applyEffect(card.new CardEffectContext(gameUno, humanPlayer, chosenColor));
 
                 } else {
@@ -146,16 +186,6 @@ public class ThreadPlayMachine extends Thread {
         saveGameState();
     }
 
-
-    /**
-     * Sets the listener to be triggered when the machine player should react to a "UNO" event.
-     *
-     * @param unoEventListener the listener to handle UNO-related behavior
-     */
-    public void setUnoEventListener(UnoEventListener unoEventListener) {
-        this.unoEventListener = unoEventListener;
-    }
-
     /**
      * Sets the listener to be notified when the game ends.
      *
@@ -165,20 +195,19 @@ public class ThreadPlayMachine extends Thread {
         this.gameOverListener = gameOverListener;
     }
 
+    /**
+     * Sets the listener to be notified when the machine plays or draws a card.
+     *
+     * @param machinePlayListener the {@link MachinePlayListener} instance
+     */
     public void setMachinePlayListener(MachinePlayListener machinePlayListener) {
         this.machinePlayListener = machinePlayListener;
     }
 
-
     /**
-     * Returns whether the human player has played their turn.
-     *
-     * @return true if the human player has played, false otherwise
+     * Saves the current state of the game to a serialized file named {@code GameState.ser}.
+     * This method is called after each machine action.
      */
-    //public boolean getHasPlayerPlayed() {
-        //return hasPlayerPlayed;
-    //}
-
     public void saveGameState() {
         serializableFileHandler = new SerializableFileHandler();
         this.gameState = new GameState(this.gameUno.getDeck(), this.gameUno, this.table, this.humanPlayer, this.playerMachine);

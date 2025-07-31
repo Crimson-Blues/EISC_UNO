@@ -14,10 +14,27 @@ import java.util.Collections;
 import java.util.Stack;
 
 /**
- * Represents a deck of Uno cards.
+ * Represents the Uno deck used during the game.
+ * <p>
+ * The {@code Deck} is initialized with cards based on {@link EISCUnoEnum} values,
+ * each associated with an effect when applicable.
+ * </p>
+ *
+ * <p>This class manages shuffling, drawing, and viewing cards, and
+ * notifies listeners when the deck runs out of cards.</p>
+ *
+ * @see Card
+ * @see EmptyDeck
+ * @see GameOverListener
  */
 public class Deck implements Serializable{
+    /**
+     * Stack representing the deck of cards in play.
+     */
     private Stack<Card> deckOfCards;
+    /**
+     * Listener to be notified when the game ends due to an empty deck.
+     */
     private transient GameOverListener gameOverListener;
 
     /**
@@ -37,7 +54,9 @@ public class Deck implements Serializable{
     }
 
     /**
-     * Initializes the deck with cards based on the EISCUnoEnum values.
+     * Initializes the deck with all cards defined in {@link EISCUnoEnum},
+     * assigning the appropriate effect (e.g., {@link SkipEffect}, {@link DrawTwoEffect})
+     * where necessary.
      */
     private void initializeDeck() {
         for (EISCUnoEnum cardEnum : EISCUnoEnum.values()) {
@@ -75,6 +94,12 @@ public class Deck implements Serializable{
     }
 }
 
+    /**
+     * Extracts the value of a card from its name representation.
+     *
+     * @param name the enum name of the card
+     * @return the card's value (number, SKIP, REVERSE, EAT2, EAT4, NEWCOLOR, etc.)
+     */
     private String getCardValue(String name) {
         if (name.endsWith("0")){
             return "0";
@@ -112,6 +137,12 @@ public class Deck implements Serializable{
 
     }
 
+    /**
+     * Extracts the color of a card from its name representation.
+     *
+     * @param name the enum name of the card
+     * @return the card's color (GREEN, YELLOW, BLUE, RED, UNKNOWN)
+     */
     private String getCardColor(String name){
         if(name.startsWith("GREEN")){
             return "GREEN";
@@ -165,6 +196,9 @@ public class Deck implements Serializable{
         return deckOfCards.peek();
     }
 
+    /**
+     * Randomly shuffles the deck.
+     */
     public void shuffle(){
         Collections.shuffle(deckOfCards);
     }
