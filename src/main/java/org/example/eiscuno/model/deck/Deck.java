@@ -1,12 +1,11 @@
 package org.example.eiscuno.model.deck;
 
 import org.example.eiscuno.listener.GameOverListener;
-import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.*;
-import org.example.eiscuno.model.cardEffect.ColorEffect;
-import org.example.eiscuno.model.cardEffect.DrawFourEffect;
-import org.example.eiscuno.model.cardEffect.DrawTwoEffect;
-import org.example.eiscuno.model.cardEffect.SkipEffect;
+import org.example.eiscuno.model.card.cardEffect.ColorEffect;
+import org.example.eiscuno.model.card.cardEffect.DrawFourEffect;
+import org.example.eiscuno.model.card.cardEffect.DrawTwoEffect;
+import org.example.eiscuno.model.card.cardEffect.SkipEffect;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.io.Serializable;
@@ -46,6 +45,9 @@ public class Deck implements Serializable{
                 Card card = new Card(cardEnum.getFilePath(), getCardValue(cardEnum.name()), getCardColor(cardEnum.name()));
             if (card.getValue() != null) {
                 switch (card.getValue()) {
+                    case "REVERSE":
+                        card.setEffect(new SkipEffect());
+                        break;
                     case "SKIP":
                         card.setEffect(new SkipEffect());
                         break;
@@ -122,10 +124,6 @@ public class Deck implements Serializable{
             return "BLUE"; //reverse card
         } else if (name.endsWith("RED")) {
             return "RED";//bloquear turno
-        } else if (name.startsWith("WILD")) {
-                return "GREEN";
-        } else if (name.startsWith("EAT4")) {
-            return "GREEN";
         } else {
             return "UNKNOWN";
         }

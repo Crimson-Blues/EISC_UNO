@@ -1,6 +1,8 @@
 package org.example.eiscuno.model.card.cardEffect;
 
-public class CardEffect {
+import java.io.Serializable;
+
+public class CardEffect implements Serializable {
     private ICardEffect cardEffect;
 
     public CardEffect(){

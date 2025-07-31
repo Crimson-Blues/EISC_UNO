@@ -17,7 +17,6 @@ public class WelcomeStageController {
 
     @FXML
     private TextField usernameField;
-
     private String nickName;
     private PlaneTextFileHandler planeTextFileHandler;
     private Boolean isContinue;

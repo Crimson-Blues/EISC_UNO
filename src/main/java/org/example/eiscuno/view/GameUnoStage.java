@@ -1,5 +1,6 @@
 package org.example.eiscuno.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -27,8 +28,13 @@ public class GameUnoStage extends Stage {
             // Re-throwing the caught IOException
             throw new IOException("Error while loading FXML file", e);
         }
-        Scene scene = new Scene(root);
-        // Configuring the stage
+
+        setOnCloseRequest(event -> {
+            Platform.exit(); // shuts down JavaFX runtime
+            System.exit(0);  // kills JVM just in case background threads are alive
+        });
+
+        Scene scene = new Scene(root); // Configuring the stage
         setTitle("EISC Uno"); // Sets the title of the stage
         setScene(scene); // Sets the scene for the stage
         setResizable(false); // Disallows resizing of the stage

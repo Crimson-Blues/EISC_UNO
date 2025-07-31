@@ -5,7 +5,7 @@ import org.example.eiscuno.listener.GameOverListener;
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.cardEffect.CardEffectContext;
+import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.gameState.GameState;
@@ -84,63 +84,56 @@ public class ThreadPlayMachine extends Thread {
         Card cardOnTable = table.getCurrentCardOnTheTable();
         boolean machinePlayed = false;
 
-            if (gameUno.isGameOver() != GameStateEnum.GAME_ONGOING) {
-                return;
-            }
+        if (gameUno.isGameOver() != GameStateEnum.GAME_ONGOING) {
+            return;
+        }
 
-            for (int i = 0; i < cards.size(); i++) {
-                Card card = cards.get(i);
-                if (gameUno.isCardPlayable(card, cardOnTable)) {
-                    if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
-                        List<String> colors = List.of("GREEN", "YELLOW", "BLUE", "RED");
-                        Random random = new Random();
-                        String chosenColor = colors.get(random.nextInt(colors.size()));
+        for (int i = 0; i < cards.size(); i++) {
+            Card card = cards.get(i);
+            if (gameUno.isCardPlayable(card, cardOnTable)) {
+                if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
+                    List<String> colors = List.of("GREEN", "YELLOW", "BLUE", "RED");
+                    Random random = new Random();
+                    String chosenColor = colors.get(random.nextInt(colors.size()));
 
-                        System.out.println("[MÁQUINA] Color elegido: " + chosenColor);
-                        card.applyEffect(new CardEffectContext(gameUno, humanPlayer, card, chosenColor));
+                    System.out.println("[MÁQUINA] Color elegido: " + chosenColor);
+                    card.applyEffect(new CardEffectContext(gameUno, humanPlayer, card, chosenColor));
 
-                    }else{
-                        card.applyEffect(new CardEffectContext(gameUno, humanPlayer));
-                    }
-
-                    if(card.getEffect()==null){
-                        gameUno.changeTurn();
-                    }
-
-                    gameUno.playCard(card);
-                    //setHasPlayerPlayed(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE"));
-
-                    tableImageView.setImage(card.getImage());
-                    playerMachine.removeCard(i);
-
-                    if (unoEventListener != null) {
-                        unoEventListener.onPlayerForgotToSayUno();
-                    }
-
-                    if (gameOverListener != null) {
-                        gameOverListener.onGameOver();
-                    }
-                    //Boolean flag to exit while loop
-                    machinePlayed = true;
-
+                } else {
+                    card.applyEffect(new CardEffectContext(gameUno, humanPlayer));
                 }
-            }
-            if(!machinePlayed){
-                gameUno.eatCard(playerMachine, 1);
-                gameUno.changeTurn();
-                System.out.println("No hay cartas jugables.");
-            }
-                return;
+
+                if (card.getEffect() == null) {
+                    gameUno.changeTurn();
+                }
+
+                gameUno.playCard(card);
+                //setHasPlayerPlayed(card.getValue().equals("SKIP") || card.getValue().equals("REVERSE"));
+
+                tableImageView.setImage(card.getImage());
+                playerMachine.removeCard(i);
+
+                if (unoEventListener != null) {
+                    unoEventListener.onPlayerForgotToSayUno();
+                }
+
+                if (gameOverListener != null) {
+                    gameOverListener.onGameOver();
+                }
+                //Boolean flag to exit while loop
+                machinePlayed = true;
+
             }
         }
 
-        gameUno.eatCard(playerMachine, 1);
-        System.out.println("No hay cartas jugables.");
+        if (!machinePlayed) {
+            gameUno.eatCard(playerMachine, 1);
+            gameUno.changeTurn();
+            System.out.println("No hay cartas jugables.");
+
+        }
+
         saveGameState();
-        putCardOnTable();
-
-    }
-
     }
 
 
@@ -168,15 +161,16 @@ public class ThreadPlayMachine extends Thread {
      *
      * @return true if the human player has played, false otherwise
      */
-    public boolean getHasPlayerPlayed(){
-        return hasPlayerPlayed;
-    }
+    //public boolean getHasPlayerPlayed() {
+        //return hasPlayerPlayed;
+    //}
 
-    public void saveGameState(){
+    public void saveGameState() {
         serializableFileHandler = new SerializableFileHandler();
-        this.gameState = new GameState(this.gameUno.getDeck(),this.gameUno,this.table,this.humanPlayer,this.playerMachine);
-        serializableFileHandler.serialize("GameState.ser",this.gameState);
+        this.gameState = new GameState(this.gameUno.getDeck(), this.gameUno, this.table, this.humanPlayer, this.playerMachine);
+        serializableFileHandler.serialize("GameState.ser", this.gameState);
         System.out.println("Saving machine movement...");
     }
 }
+
 

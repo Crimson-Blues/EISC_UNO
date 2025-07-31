@@ -1,12 +1,9 @@
-package org.example.eiscuno.model.cardEffect;
+package org.example.eiscuno.model.card.cardEffect;
 
 
-import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.game.GameUno;
-import org.example.eiscuno.model.game.TurnEnum;
-import org.example.eiscuno.model.player.Player;
+import java.io.Serializable;
 
-public class DrawTwoEffect  implements ICardEffect {
+public class DrawTwoEffect  implements ICardEffect, Serializable {
 
     @Override
     public void applyEffect(CardEffectContext context) {

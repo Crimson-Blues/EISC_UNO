@@ -2,11 +2,9 @@ package org.example.eiscuno.model.card;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import org.example.eiscuno.model.cardEffect.CardEffect;
-import org.example.eiscuno.model.cardEffect.CardEffectContext;
-import org.example.eiscuno.model.cardEffect.ICardEffect;
-import org.example.eiscuno.model.game.GameUno;
-import org.example.eiscuno.model.player.Player;
+import org.example.eiscuno.model.card.cardEffect.CardEffect;
+import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
+import org.example.eiscuno.model.card.cardEffect.ICardEffect;
 
 import java.io.Serializable;
 
