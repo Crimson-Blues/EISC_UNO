@@ -6,6 +6,7 @@ import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
@@ -14,6 +15,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
@@ -27,10 +32,12 @@ import org.example.eiscuno.model.game.TurnEnum;
 import org.example.eiscuno.model.gameState.GameState;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
+import org.example.eiscuno.model.planeTextFiles.PlaneTextFileHandler;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 import org.example.eiscuno.view.WelcomeStage;
+import org.example.eiscuno.view.drawers.ShapeDrawer;
 
 import java.io.IOException;
 import java.util.List;
@@ -61,6 +68,14 @@ public class GameUnoController {
     private ImageView unoImageView;
     @FXML
     private Label errorLabel;
+    @FXML
+    private Label turnLabel;
+    @FXML
+    private HBox turnHBox;
+    @FXML
+    private HBox colorHBox;
+    @FXML
+    private Circle colorCircle;
 
     private Player humanPlayer;
     private Player machinePlayer;
@@ -71,10 +86,12 @@ public class GameUnoController {
     private ThreadPlayMachine threadPlayMachine;
     private ThreadSingUnoMachine  threadSingUnoMachine;
     private Thread threadSingUno;
-
+    private String nickname;
     private GameState gameState;
     private Boolean isContinue;
     private SerializableFileHandler serializableFileHandler;
+    private PlaneTextFileHandler planeTextFileHandler;
+    private ShapeDrawer shapeDrawer = new ShapeDrawer();
 
     /**
      * Initializes the controller.
@@ -85,6 +102,7 @@ public class GameUnoController {
         isContinue = WelcomeStage.getInstance().getWelcomeStageController().returnIsContinue();
         WelcomeStage.deleteInstance();
         serializableFileHandler = new SerializableFileHandler();
+        planeTextFileHandler = new PlaneTextFileHandler();
 
         if(!isContinue){
             try {
@@ -107,6 +125,7 @@ public class GameUnoController {
             setGameOverListener();
             setMachineListener();
             showUnoButton();
+            updateLabels();
 
         }
         else{
@@ -124,6 +143,7 @@ public class GameUnoController {
         this.table = new Table();
         this.gameUno = new GameUno(this.humanPlayer, this.machinePlayer, this.deck, this.table);
         this.posInitCardToShow = 0;
+        this.nickname = planeTextFileHandler.read("PlayerData.csv")[0];
     }
 
     /**
@@ -186,13 +206,16 @@ public class GameUnoController {
                     showError(errorLabel, e.getMessage());
                 }
                 printCardsHumanPlayer();
+                updateLabels();
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
         }
 
     }
 
-    //Mostrar mini-ventana para preguntar el color a cambiar
+    /**
+     * Displays a dialog window to ask for a color change for color changing cards.
+     */
     public String askColor (){
         while (true) {
             ChoiceDialog<String> dialog = new ChoiceDialog<>("GREEN", List.of("GREEN", "YELLOW", "BLUE", "RED"));
@@ -204,6 +227,29 @@ public class GameUnoController {
                 return result.get();
             }
         }
+    }
+
+    public void updateLabels(){
+        String color = table.getCurrentCardOnTheTable().getColor();
+        color = switch (color) {
+            case "GREEN" -> "#379711";
+            case "YELLOW" -> "#ECD407";
+            case "RED" -> "#D72600";
+            case "BLUE" -> "#0956BF";
+            default -> "#8a08fc";
+        };
+
+        colorCircle.setFill(Color.web(color));
+        turnHBox.getChildren().clear();
+        Group turnGroup = null;
+        if(gameUno.getTurn() == TurnEnum.PLAYER){
+            turnLabel.setText("Turno: " + nickname );
+            turnGroup = shapeDrawer.drawPerson();
+        }else if(gameUno.getTurn() == TurnEnum.MACHINE){
+            turnLabel.setText("Turno: Máquina");
+            turnGroup = shapeDrawer.drawRobot();
+        }
+        turnHBox.getChildren().addAll(turnLabel, turnGroup);
     }
 
     /**
@@ -235,6 +281,7 @@ public class GameUnoController {
                 showUnoButton();
                 printCardsHumanPlayer();
                 printCardsMachinePlayer();
+                updateLabels();
             });
         });
 
@@ -243,6 +290,7 @@ public class GameUnoController {
                 showUnoButton();
                 printCardsHumanPlayer();
                 printCardsMachinePlayer();
+                updateLabels();
             });
         });
     }
@@ -262,6 +310,7 @@ public class GameUnoController {
                    printCardsHumanPlayer();
                    printCardsMachinePlayer();
                    showUnoButton();
+                   updateLabels();
                 });
             }
 
@@ -433,6 +482,7 @@ public class GameUnoController {
             saveGameState();
             showUnoButton();
             printCardsHumanPlayer();
+            updateLabels();
             gameUno.changeTurn();
         }
     }

@@ -34,7 +34,8 @@
 
 .general-label {
     -fx-font-size: 22px;
-    -fx-text-fill: #363131;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 .welcome-button {
