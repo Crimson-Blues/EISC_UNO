@@ -138,7 +138,7 @@ public class Deck implements Serializable{
      * Takes a card from the top of the deck.
      *
      * @return the card from the top of the deck
-     * @throws IllegalStateException if the deck is empty
+     * @throws EmptyDeck if the deck is empty
      */
     public Card takeCard() throws EmptyDeck {
         if (deckOfCards.isEmpty()) {
@@ -147,7 +147,6 @@ public class Deck implements Serializable{
                 gameOverListener.onGameOver();
             }
             throw new EmptyDeck("No hay más cartas en el mazo");
-
         }
         return deckOfCards.pop();
     }
@@ -156,12 +155,11 @@ public class Deck implements Serializable{
      * Shows card at the top of the deck without taking it out of the deck.
      *
      * @return Reference to card from the top of the deck
-     * @throws IllegalStateException if the deck is empty
+     * @throws EmptyDeck if the deck is empty
      */
-    public Card viewCard() {
+    public Card viewCard() throws EmptyDeck{
         if (deckOfCards.isEmpty()) {
-            throw new IllegalStateException("No hay cartas en el mazo.");
-
+            throw new EmptyDeck("No hay más cartas en el mazo");
         }
 
         return deckOfCards.peek();

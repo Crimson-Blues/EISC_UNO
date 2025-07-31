@@ -3,6 +3,7 @@ package org.example.eiscuno.model.deck;
 import javafx.application.Platform;
 import org.example.eiscuno.listener.GameOverListener;
 import org.example.eiscuno.model.card.Card;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,35 +34,44 @@ class DeckTest {
         Deck deck = new Deck();
         assertFalse(deck.isEmpty());
         while (!deck.isEmpty()){
-            deck.takeCard();
+            try{
+                deck.takeCard();
+            } catch (EmptyDeck e) {
+                e.printStackTrace();
+            }
         }
         assertTrue(deck.isEmpty());
     }
 
     @Test
-    void deckTakesCardsCorrectly(){
+    void deckTakesCardsCorrectly() throws EmptyDeck{
         Deck deck = new Deck();
         int initialSize = 0;
         while (!deck.isEmpty()) {
             deck.takeCard();
             initialSize++;
         }
-        assertThrows(IllegalStateException.class, deck::takeCard);
+        assertThrows(EmptyDeck.class, deck::takeCard);
         assertEquals(54, initialSize);
     }
 
     @Test
-    void viewCardWorksAsExpected(){
+    void viewCardWorksAsExpected() throws EmptyDeck{
         Deck deck = new Deck();
         Card top = deck.viewCard();
-        Card firstTakenCard = deck.takeCard();
+        Card firstTakenCard = null;
+        try{
+            firstTakenCard = deck.takeCard();
+        } catch (EmptyDeck e) {
+            e.printStackTrace();
+        }
         assertSame(top, firstTakenCard);
 
         while (!deck.isEmpty()){
             deck.takeCard();
         }
 
-        assertThrows(IllegalStateException.class, deck::viewCard);
+        assertThrows(EmptyDeck.class, deck::viewCard);
     }
 
 

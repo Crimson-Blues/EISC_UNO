@@ -6,7 +6,9 @@ import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 
-public abstract class GameUnoAdapter implements IGameUno {
+import java.io.Serializable;
+
+public abstract class GameUnoAdapter implements IGameUno, Serializable {
 
     protected Player humanPlayer;
     protected Player machinePlayer;
@@ -15,7 +17,15 @@ public abstract class GameUnoAdapter implements IGameUno {
     protected String currentColor;
     protected volatile TurnEnum turn;
 
+    public GameUnoAdapter(Player humanPlayer, Player machinePlayer, Deck deck, Table table) {
+        this.humanPlayer = humanPlayer;
+        this.machinePlayer = machinePlayer;
+        this.deck = deck;
+        this.table = table;
+        this.turn = TurnEnum.PLAYER;
+        currentColor = "";
 
+    }
 
     /**
      * Starts the Uno game by distributing cards to players.
@@ -24,8 +34,8 @@ public abstract class GameUnoAdapter implements IGameUno {
     @Override
     public void startGame() throws EmptyDeck {
         //Reparte las cartas iniciales al jugador humano y máquina
-        for (int i = 0; i < 7; i++) {
-            if (i < 2) {
+        for (int i = 0; i < 10; i++) {
+            if (i < 5) {
                 humanPlayer.addCard(this.deck.takeCard());
             } else {
                 machinePlayer.addCard(this.deck.takeCard());

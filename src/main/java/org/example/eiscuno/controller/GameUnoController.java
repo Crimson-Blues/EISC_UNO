@@ -550,15 +550,14 @@ public class GameUnoController {
     public void loadGameState(){
         System.out.println("Loading gameState...");
         this.gameState = (GameState) serializableFileHandler.deserialize("GameState.ser");
+        this.nickname = planeTextFileHandler.read("PlayerData.csv")[0];
+
         if(gameState != null){
             this.deck = gameState.getDeck();
             this.gameUno = gameState.getGameUno();
             this.table = gameState.getTable();
             this.humanPlayer = gameState.getHumanPlayer();
             this.machinePlayer = gameState.getMachinePlayer();
-
-            printCardsHumanPlayer();
-            printCardsMachinePlayer();
 
             Card cardOnTable = table.getCurrentCardOnTheTable();
             if (cardOnTable != null) {
@@ -581,6 +580,9 @@ public class GameUnoController {
             setUnoListener();
             setGameOverListener();
             setCurrentColorListener();
+            printCardsHumanPlayer();
+            printCardsMachinePlayer();
+            updateLabels();
 
             showUnoButton();
 

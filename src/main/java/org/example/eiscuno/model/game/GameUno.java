@@ -15,7 +15,6 @@ import java.io.Serializable;
  */
 public class GameUno extends GameUnoAdapter implements Serializable {
 
-
     /**
      * Constructs a new GameUno instance.
      *
@@ -25,12 +24,7 @@ public class GameUno extends GameUnoAdapter implements Serializable {
      * @param table         The table where cards are placed during the game.
      */
     public GameUno(Player humanPlayer, Player machinePlayer, Deck deck, Table table) {
-        this.humanPlayer = humanPlayer;
-        this.machinePlayer = machinePlayer;
-        this.deck = deck;
-        this.table = table;
-        this.turn = TurnEnum.PLAYER;
-        currentColor = "";
+        super(humanPlayer, machinePlayer, deck, table);
     }
 
 }
