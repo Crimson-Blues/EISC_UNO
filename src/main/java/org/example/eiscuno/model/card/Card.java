@@ -249,6 +249,7 @@ public class Card implements Serializable {
     }
 
     /**
+     * Retrieves the value or figure of the card.
      * @return the value of this card (number or action)
      */
     public String getValue() {
@@ -256,6 +257,7 @@ public class Card implements Serializable {
     }
 
     /**
+     * Retrieves the color of the card, returns "UNKOWN" for wild cards.
      * @return the color of this card
      */
     public String getColor() {
