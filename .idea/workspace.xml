@@ -40,12 +40,12 @@
     &quot;assignee&quot;: &quot;fabiansvc&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Crimson-Blues/EISC_UNO.git",
-    "accountId": "a1803d58-8855-4663-8372-de999dee8daf"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Crimson-Blues/EISC_UNO.git&quot;,
+    &quot;accountId&quot;: &quot;a1803d58-8855-4663-8372-de999dee8daf&quot;
   }
-}]]></component>
+}</component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -76,7 +76,7 @@
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "jeas",
+    "git-widget-placeholder": "jppt",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/Juanpa/IdeaProjects/EISC_UNO/src/main/resources/org/example/eiscuno/images",
@@ -112,7 +112,12 @@
       <recent name="org.example.eiscuno.model.deck" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.CardTest">
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn compile" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.example.eiscuno.Main" />
       <module name="eisc-uno" />
@@ -236,7 +241,7 @@
       <workItem from="1753841792738" duration="82000" />
       <workItem from="1753855413668" duration="7903000" />
       <workItem from="1753886915887" duration="3090000" />
-      <workItem from="1753935652486" duration="7627000" />
+      <workItem from="1753941786539" duration="1352000" />
     </task>
     <servers />
   </component>
