@@ -18,6 +18,7 @@ import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.game.TurnEnum;
 import org.example.eiscuno.model.gameState.GameState;
+import org.example.eiscuno.model.machine.ThreadCurrentColorMachine;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
@@ -61,9 +62,12 @@ public class GameUnoController {
     private Table table;
     private GameUno gameUno;
     private int posInitCardToShow;
+    private String currentColor;
     private ThreadPlayMachine threadPlayMachine;
     private ThreadSingUnoMachine  threadSingUnoMachine;
+    private ThreadCurrentColorMachine threadCurrentColorMachine;
     private Thread threadSingUno;
+    private Thread threadCurrentColor;
 
 
     private GameState gameState;
@@ -93,8 +97,14 @@ public class GameUnoController {
             threadSingUno.setDaemon(true);
             threadSingUno.start();
 
+            threadCurrentColorMachine = new ThreadCurrentColorMachine(this.gameUno, this.table);
+            threadCurrentColor = new Thread(threadCurrentColorMachine);
+            threadCurrentColor.setDaemon(true);
+            threadCurrentColor.start();
+
             setUnoListener();
             setGameOverListener();
+            setCurrentColorListener();
             showUnoBotton();
         }
         else{
@@ -166,13 +176,20 @@ public class GameUnoController {
 
                 threadSingUnoMachine.stopThread();
                 threadSingUno.interrupt();
+
+                threadCurrentColorMachine.stopThread();
+                threadCurrentColor.interrupt();
+
                 gameHasEndedAlert();
             }
         }
 
     }
 
-    //Mostrar mini-ventana para preguntar el color a cambiar
+    /**
+     * Shows a mini windows asking for the color to change
+     * @return the new color
+     */
     public String askColor (){
         while (true) {
             ChoiceDialog<String> dialog = new ChoiceDialog<>("GREEN", List.of("GREEN", "YELLOW", "BLUE", "RED"));
@@ -240,6 +257,9 @@ public class GameUnoController {
                     threadSingUnoMachine.stopThread();
                     threadSingUno.interrupt();
 
+                    threadCurrentColorMachine.stopThread();
+                    threadCurrentColor.interrupt();
+
                     gameHasEndedAlert();
                 }
             });
@@ -253,9 +273,21 @@ public class GameUnoController {
                 threadSingUnoMachine.stopThread();
                 threadSingUno.interrupt();
 
+                threadCurrentColorMachine.stopThread();
+                threadCurrentColor.interrupt();
+
                 deckImageView.setVisible(false);
                 gameHasEndedAlert();
             }
+        });
+    }
+
+    /**
+     * Saves the new color if it changed
+     */
+    public void setCurrentColorListener(){
+        threadCurrentColorMachine.setCurrentColorListener(() -> {
+            currentColor = gameUno.getCurrentColor();
         });
     }
 
@@ -403,12 +435,18 @@ public class GameUnoController {
         showUnoBotton();
     }
 
+    /**
+     * Saves the current state of the game
+     */
     public void saveGameState(){
         System.out.println("Saving gameState...");
         this.gameState = new GameState(this.deck,this.gameUno,this.table,this.humanPlayer,this.machinePlayer);
         serializableFileHandler.serialize("GameState.ser", gameState);
     }
 
+    /**
+     * Loads a saved state of the game
+     */
     public void loadGameState(){
         System.out.println("Loading gameState...");
         this.gameState = (GameState) serializableFileHandler.deserialize("GameState.ser");
@@ -435,8 +473,14 @@ public class GameUnoController {
             threadSingUno.setDaemon(true);
             threadSingUno.start();
 
+            threadCurrentColorMachine = new ThreadCurrentColorMachine(this.gameUno, this.table);
+            threadCurrentColor = new Thread(threadCurrentColorMachine);
+            threadCurrentColor.setDaemon(true);
+            threadCurrentColor.start();
+
             setUnoListener();
             setGameOverListener();
+            setCurrentColorListener();
             showUnoBotton();
         }
     }

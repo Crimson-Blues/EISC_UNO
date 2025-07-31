@@ -17,6 +17,7 @@ public class GameUno implements IGameUno, Serializable {
     private Player machinePlayer;
     private Deck deck;
     private Table table;
+    private String currentColor;
     private volatile TurnEnum turn;
 
 
@@ -34,6 +35,7 @@ public class GameUno implements IGameUno, Serializable {
         this.deck = deck;
         this.table = table;
         this.turn = TurnEnum.PLAYER;
+        currentColor = "";
     }
 
     /**
@@ -183,7 +185,26 @@ public class GameUno implements IGameUno, Serializable {
         return GameStateEnum.GAME_ONGOING;
     }
 
+    /**
+     * Returns the deck
+     * @return the deck of cards
+     */
     public Deck getDeck(){
         return this.deck;
+    }
+
+    /**
+     * Sets the current color of the game
+     */
+    public void setCurrentColor(){
+        currentColor = table.getCurrentCardOnTheTable().getColor();
+    }
+
+    /**
+     * Returns the current color of the game
+     * @return current color of the card on the table
+     */
+    public String getCurrentColor(){
+        return currentColor;
     }
 }
