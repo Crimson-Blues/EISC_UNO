@@ -108,8 +108,6 @@ public class GameUnoController {
             try {
                 initVariables();
                 this.gameUno.startGame();
-                printCardsHumanPlayer();
-                printCardsMachinePlayer();
                 threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
                 threadPlayMachine.start();
 
@@ -125,6 +123,8 @@ public class GameUnoController {
             setGameOverListener();
             setMachineListener();
             showUnoButton();
+            printCardsHumanPlayer();
+            printCardsMachinePlayer();
             updateLabels();
 
         }
@@ -282,6 +282,7 @@ public class GameUnoController {
                 printCardsHumanPlayer();
                 printCardsMachinePlayer();
                 updateLabels();
+                showError(errorLabel, "Olvidaste decir UNO!");
             });
         });
 
@@ -392,10 +393,9 @@ public class GameUnoController {
      */
 
     private void showUnoButton(){
-        System.out.println("Numero cartas jugador:" + humanPlayer.getCardsPlayer().size());
-        System.out.println("Ya cantó UNO: " + threadSingUnoMachine.getAlreadySangUno());
-        System.out.printf("On going game" + gameUno.isGameOver());
-        System.out.println("\n");
+        if(humanPlayer.getCardsPlayer().size() > 1){
+            threadSingUnoMachine.setAlreadySangUno(false);
+        }
         if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()
             && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
             System.out.println("Showing UNO BUTTON");
@@ -482,8 +482,8 @@ public class GameUnoController {
             saveGameState();
             showUnoButton();
             printCardsHumanPlayer();
-            updateLabels();
             gameUno.changeTurn();
+            updateLabels();
         }
     }
 
