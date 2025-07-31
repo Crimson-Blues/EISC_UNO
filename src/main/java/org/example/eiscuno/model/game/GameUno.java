@@ -45,8 +45,8 @@ public class GameUno implements IGameUno, Serializable {
     @Override
     public void startGame() throws EmptyDeck {
         //Reparte las cartas iniciales al jugador humano y máquina
-        for (int i = 0; i < 7; i++) {
-            if (i < 2) {
+        for (int i = 0; i < 10; i++) {
+            if (i < 5) {
                 humanPlayer.addCard(this.deck.takeCard());
             } else {
                 machinePlayer.addCard(this.deck.takeCard());
