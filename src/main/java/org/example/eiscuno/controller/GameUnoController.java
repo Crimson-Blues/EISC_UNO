@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
@@ -444,30 +445,30 @@ public class GameUnoController {
     /**
      * Shows a visual alert if the game has ended
      */
-    private void gameHasEndedAlert(){
+    private void gameHasEndedAlert() {
         GameStateEnum gameState = gameUno.isGameOver();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("¡Juego terminado!");
+        if (gameState != GameStateEnum.GAME_ONGOING) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("¡Juego terminado!");
 
-        String winnerName;
+            String winnerName;
+            switch (gameState) {
+                case PLAYER_WON:
+                    winnerName = "Jugador humano";
+                    alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
+                    alert.setContentText("El ganador es el: " + winnerName);
+                    break;
+                case MACHINE_WON:
+                    winnerName = "Jugador máquina";
+                    alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
+                    alert.setContentText("El ganador es el: " + winnerName);
+                    break;
+                case DECK_EMPTY:
+                    alert.setHeaderText("Se acabaron las cartas...  :(");
+                    alert.setContentText("No hay ganador. El juego ha terminado");
+            }
 
-        switch (gameState) {
-            case PLAYER_WON:
-                winnerName = "Jugador humano";
-                alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
-                alert.setContentText("El ganador es el: " + winnerName);
-                break;
-            case MACHINE_WON:
-                winnerName = "Jugador máquina";
-                alert.setHeaderText("🎉 ¡Tenemos un ganador! 🎉");
-                alert.setContentText("El ganador es el: " + winnerName);
-                break;
-            case DECK_EMPTY:
-                alert.setHeaderText("Se acabaron las cartas...  :(");
-                alert.setContentText("No hay ganador. El juego ha terminado");
-
-        }
 
         ImageView imageView = new ImageView(new Image(getClass().getResource("/org/example/eiscuno/favicon.png").toString()));
         imageView.setFitWidth(64);
@@ -475,6 +476,9 @@ public class GameUnoController {
         alert.setGraphic(imageView);
 
         alert.showAndWait();
+        Stage stage = (Stage) tableImageView.getScene().getWindow();
+        stage.close();
+        }
 
     }
 
