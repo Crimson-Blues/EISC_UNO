@@ -30,12 +30,14 @@
     -fx-font-size: 20px;
     -fx-text-fill: #ed3131;
     -fx-font-weight: bold;
+    -fx-font-family: 'Segoe UI', sans-serif;
 }
 
 .general-label {
     -fx-font-size: 22px;
-    -fx-text-fill: white;
+    -fx-text-fill: #ffdb87;
     -fx-font-weight: bold;
+    -fx-font-family: 'Segoe UI', sans-serif;
 }
 
 .welcome-button {
