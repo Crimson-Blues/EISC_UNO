@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class ColorEffect implements ICardEffect, Serializable {
 
     @Override
-    public void applyEffect(CardEffectContext context) {
+    public void applyEffect(Card.CardEffectContext context) {
         Card card = context.getCard();
         String color = context.getColor();
         card.setColor(color);

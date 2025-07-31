@@ -2,6 +2,8 @@ package org.example.eiscuno.model.game;
 
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.deck.Deck;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
+import org.example.eiscuno.model.exceptions.NonPlayableCard;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 
@@ -43,10 +45,10 @@ public class GameUno implements IGameUno, Serializable {
      * The human player and the machine player each receive 10 cards from the deck.
      */
     @Override
-    public void startGame() {
+    public void startGame() throws EmptyDeck {
         //Reparte las cartas iniciales al jugador humano y máquina
-        for (int i = 0; i < 10; i++) {
-            if (i < 5) {
+        for (int i = 0; i < 7; i++) {
+            if (i < 2) {
                 humanPlayer.addCard(this.deck.takeCard());
             } else {
                 machinePlayer.addCard(this.deck.takeCard());
@@ -70,9 +72,9 @@ public class GameUno implements IGameUno, Serializable {
 
         // Coincidencia en color o valor
         boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
-        System.out.println(colorMatch);
+        //System.out.println(colorMatch);
         boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
-        System.out.println(valueMatch);
+        //System.out.println(valueMatch);
 
         // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
         boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
@@ -88,7 +90,7 @@ public class GameUno implements IGameUno, Serializable {
      * @param numberOfCards The number of cards to draw.
      */
     @Override
-    public void eatCard(Player player, int numberOfCards) {
+    public void eatCard(Player player, int numberOfCards) throws  EmptyDeck {
         for (int i = 0; i < numberOfCards; i++) {
             player.addCard(this.deck.takeCard());
         }
@@ -98,7 +100,7 @@ public class GameUno implements IGameUno, Serializable {
      * Put the first card on the table
      */
     @Override
-    public void putFirstCard(){
+    public void putFirstCard() throws EmptyDeck {
         Card cardToPlay = this.deck.viewCard();
         while(cardToPlay.getEffect() != null) {
             this.deck.shuffle();
@@ -140,10 +142,14 @@ public class GameUno implements IGameUno, Serializable {
      */
     @Override
     public void haveSungOne(String playerWhoSang) {
-        if (playerWhoSang.equals("HUMAN_PLAYER")) {
-            machinePlayer.addCard(this.deck.takeCard());
-        } else {
-            humanPlayer.addCard(this.deck.takeCard());
+        try {
+            if (playerWhoSang.equals("HUMAN_PLAYER")) {
+                machinePlayer.addCard(this.deck.takeCard());
+            } else {
+                humanPlayer.addCard(this.deck.takeCard());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

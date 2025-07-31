@@ -1,5 +1,7 @@
 package org.example.eiscuno.model.card.cardEffect;
 
+import org.example.eiscuno.model.card.Card;
+
 import java.io.Serializable;
 
 public class CardEffect implements Serializable {
@@ -17,7 +19,7 @@ public class CardEffect implements Serializable {
         this.cardEffect = cardEffect;
     }
 
-    public void applyEffect(CardEffectContext context) {
+    public void applyEffect(Card.CardEffectContext context) {
         if(cardEffect != null){
             cardEffect.applyEffect(context);
         }
