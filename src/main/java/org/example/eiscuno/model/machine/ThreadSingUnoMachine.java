@@ -2,6 +2,7 @@ package org.example.eiscuno.model.machine;
 
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.card.Card;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.player.Player;
@@ -36,14 +37,18 @@ public class ThreadSingUnoMachine implements Runnable{
     @Override
     public void run() {
         while(running){
-            try{
-                Thread.sleep((long) (Math.random() * 5000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(this.humanPlayer.getCardsPlayer().size() == 1 && !alreadySangUno) {
+                try {
+                    Thread.sleep((long) (2000 + Math.random() * 2000));
+                    System.out.println("Sleeping waiting for player to say UNO");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!alreadySangUno){
+                    hasHumanOneCard();
+                }
+
             }
-
-            hasHumanOneCard();
-
         }
     }
 
@@ -86,15 +91,16 @@ public class ThreadSingUnoMachine implements Runnable{
      * If so, applies a penalty and notifies the listener.
      */
     public void hasHumanOneCard(){
-        if(humanPlayer.getCardsPlayer().size() == 1 && !alreadySangUno && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
-            System.out.println("UNO!");
+        System.out.println("UNO!");
+        try {
             gameUno.eatCard(humanPlayer, 1);
-
-            if (listener != null) {
-                listener.onPlayerForgotToSayUno();
-            }
-
-            setAlreadySangUno(true);
+        }catch (EmptyDeck e){
+            e.printStackTrace();
         }
+
+        if (listener != null) {
+            listener.onPlayerForgotToSayUno();
+        }
+        setAlreadySangUno(true);
     }
 }

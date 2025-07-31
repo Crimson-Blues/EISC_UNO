@@ -2,10 +2,13 @@ package org.example.eiscuno.model.machine;
 
 import javafx.scene.image.ImageView;
 import org.example.eiscuno.listener.GameOverListener;
+import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
+import org.example.eiscuno.model.exceptions.NonPlayableCard;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.gameState.GameState;
@@ -27,6 +30,7 @@ public class ThreadPlayMachine extends Thread {
     private GameOverListener gameOverListener;
     private GameState gameState;
     private SerializableFileHandler serializableFileHandler;
+    private MachinePlayListener machinePlayListener;
 
 
     /**
@@ -90,7 +94,8 @@ public class ThreadPlayMachine extends Thread {
 
         for (int i = 0; i < cards.size(); i++) {
             Card card = cards.get(i);
-            if (gameUno.isCardPlayable(card, cardOnTable)) {
+            boolean isCardPlayable = gameUno.isCardPlayable(card, cardOnTable);
+            if (isCardPlayable) {
                 if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
                     List<String> colors = List.of("GREEN", "YELLOW", "BLUE", "RED");
                     Random random = new Random();
@@ -113,9 +118,6 @@ public class ThreadPlayMachine extends Thread {
                 tableImageView.setImage(card.getImage());
                 playerMachine.removeCard(i);
 
-                if (unoEventListener != null) {
-                    unoEventListener.onPlayerForgotToSayUno();
-                }
 
                 if (gameOverListener != null) {
                     gameOverListener.onGameOver();
@@ -127,12 +129,22 @@ public class ThreadPlayMachine extends Thread {
         }
 
         if (!machinePlayed) {
-            gameUno.eatCard(playerMachine, 1);
+            try {
+                gameUno.eatCard(playerMachine, 1);
+            }catch (EmptyDeck e){
+                e.printStackTrace();
+            }
+            if(machinePlayListener != null){
+                machinePlayListener.onMachineDrewCard();
+            }
             gameUno.changeTurn();
             System.out.println("No hay cartas jugables.");
 
         }
 
+        if(machinePlayListener != null){
+            machinePlayListener.onMachinePlayed();
+        }
         saveGameState();
     }
 
@@ -153,6 +165,10 @@ public class ThreadPlayMachine extends Thread {
      */
     public void setGameOverListener(GameOverListener gameOverListener) {
         this.gameOverListener = gameOverListener;
+    }
+
+    public void setMachinePlayListener(MachinePlayListener machinePlayListener) {
+        this.machinePlayListener = machinePlayListener;
     }
 
 

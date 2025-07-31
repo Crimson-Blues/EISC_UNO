@@ -1,19 +1,27 @@
 package org.example.eiscuno.controller;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
+import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
+import org.example.eiscuno.model.exceptions.NonPlayableCard;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.game.TurnEnum;
@@ -48,12 +56,12 @@ public class GameUnoController {
 
     @FXML
     private ImageView deckCards;
-
     @FXML
-    private Button unoBotton;
-
+    private Button unoButton;
     @FXML
     private ImageView unoImageView;
+    @FXML
+    private Label errorLabel;
 
     private Player humanPlayer;
     private Player machinePlayer;
@@ -64,7 +72,6 @@ public class GameUnoController {
     private ThreadPlayMachine threadPlayMachine;
     private ThreadSingUnoMachine  threadSingUnoMachine;
     private Thread threadSingUno;
-
 
     private GameState gameState;
     private Boolean isContinue;
@@ -81,21 +88,27 @@ public class GameUnoController {
         serializableFileHandler = new SerializableFileHandler();
 
         if(!isContinue){
-            initVariables();
-            this.gameUno.startGame();
-            printCardsHumanPlayer();
-            printCardsMachinePlayer();
-            threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
-            threadPlayMachine.start();
+            try {
+                initVariables();
+                this.gameUno.startGame();
+                printCardsHumanPlayer();
+                printCardsMachinePlayer();
+                threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
+                threadPlayMachine.start();
 
-            threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
-            threadSingUno = new Thread(threadSingUnoMachine);
-            threadSingUno.setDaemon(true);
-            threadSingUno.start();
+                threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
+                threadSingUno = new Thread(threadSingUnoMachine);
+                threadSingUno.setDaemon(true);
+                threadSingUno.start();
+            }catch (Exception e){
+                showError(errorLabel, e.getMessage());
+            }
 
             setUnoListener();
             setGameOverListener();
-            showUnoBotton();
+            setMachineListener();
+            showUnoButton();
+
         }
         else{
             loadGameState();
@@ -133,41 +146,49 @@ public class GameUnoController {
         for (int i = 0; i < currentVisibleCardsHumanPlayer.length; i++) {
             Card card = currentVisibleCardsHumanPlayer[i];
             ImageView cardImageView = card.getCard();
-
             Card finalCurrentCardOnTable = currentCardOnTable;
             cardImageView.setOnMouseClicked((MouseEvent event) -> {
-                boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
-                System.out.println(isPlayable);
-                if (isPlayable && gameUno.getTurn() == TurnEnum.PLAYER && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
+                try {
+                    boolean isPlayable = gameUno.isCardPlayable(card, finalCurrentCardOnTable);
+                    if (!isPlayable) {
+                        throw new NonPlayableCard("Carta inválida");
+                    }
+                    if (gameUno.getTurn() == TurnEnum.PLAYER
+                            && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING) {
+                        String color = "";
+                        // Aplicar efecto si es una carta especial
+                        Player targetPlayer = machinePlayer;
+                        if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
+                            color = askColor();
+                        }
+                        if (card.getEffect() != null) {
+                            card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
+                        } else {
+                            gameUno.changeTurn();
+                            System.out.println("Turn: " + gameUno.getTurn());
+                        }
+                        gameUno.playCard(card);
+                        saveGameState();
+                        tableImageView.setImage(card.getImage());
+                        humanPlayer.removeCard(findPosCardsHumanPlayer(card));
+                        showUnoButton();
 
-                    String color = "";
-                    // Aplicar efecto si es una carta especial
-                    Player targetPlayer = machinePlayer;
-                    if (card.getValue().equals("NEWCOLOR") || card.getValue().equals("EAT4")) {
-                        color = askColor();
+                        if (gameUno.isGameOver() != GameStateEnum.GAME_ONGOING) {
+                            threadPlayMachine.stopThread();
+                            threadPlayMachine.interrupt();
+
+                            threadSingUnoMachine.stopThread();
+                            threadSingUno.interrupt();
+                            gameHasEndedAlert();
+                        }
+
                     }
-                    if(card.getEffect()!=null){
-                        card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
-                    }else{
-                        gameUno.changeTurn();
-                        System.out.println("Turn: " + gameUno.getTurn());
-                    }
-                    gameUno.playCard(card);
-                    saveGameState();
-                    tableImageView.setImage(card.getImage());
-                    humanPlayer.removeCard(findPosCardsHumanPlayer(card));
-                    printCardsHumanPlayer();
+                }catch (NonPlayableCard e) {
+                    showError(errorLabel, e.getMessage());
                 }
+                printCardsHumanPlayer();
             });
             this.gridPaneCardsPlayer.add(cardImageView, i, 0);
-            if(gameUno.isGameOver() != GameStateEnum.GAME_ONGOING){
-                threadPlayMachine.stopThread();
-                threadPlayMachine.interrupt();
-
-                threadSingUnoMachine.stopThread();
-                threadSingUno.interrupt();
-                gameHasEndedAlert();
-            }
         }
 
     }
@@ -212,7 +233,7 @@ public class GameUnoController {
     private void setUnoListener(){
         threadSingUnoMachine.setUnoEventListener(() -> {
             Platform.runLater(() -> {
-                showUnoBotton();
+                showUnoButton();
                 printCardsHumanPlayer();
                 printCardsMachinePlayer();
             });
@@ -220,10 +241,31 @@ public class GameUnoController {
 
         threadPlayMachine.setUnoEventListener(() -> {
             Platform.runLater(() -> {
-                showUnoBotton();
+                showUnoButton();
                 printCardsHumanPlayer();
                 printCardsMachinePlayer();
             });
+        });
+    }
+
+    private void setMachineListener(){
+        threadPlayMachine.setMachinePlayListener(new MachinePlayListener() {
+            @Override
+            public void onMachineDrewCard() {
+                Platform.runLater(() -> {
+                    showError(errorLabel, "Máquina tomó una carta");
+                });
+            }
+
+            @Override
+            public void onMachinePlayed() {
+                Platform.runLater(() -> {
+                   printCardsHumanPlayer();
+                   printCardsMachinePlayer();
+                   showUnoButton();
+                });
+            }
+
         });
     }
 
@@ -301,22 +343,27 @@ public class GameUnoController {
      * Shows the uno button depending on the rules
      */
 
-    private void showUnoBotton(){
+    private void showUnoButton(){
+        System.out.println("Numero cartas jugador:" + humanPlayer.getCardsPlayer().size());
+        System.out.println("Ya cantó UNO: " + threadSingUnoMachine.getAlreadySangUno());
+        System.out.printf("On going game" + gameUno.isGameOver());
+        System.out.println("\n");
         if(humanPlayer.getCardsPlayer().size() == 1 && !threadSingUnoMachine.getAlreadySangUno()
             && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
-            unoBotton.setVisible(true);
-            unoBotton.setManaged(true);
+            System.out.println("Showing UNO BUTTON");
+            unoButton.setVisible(true);
+            //unoButton.setManaged(true);
 
             unoImageView.setVisible(true);
-            unoImageView.setManaged(true);
+            //unoImageView.setManaged(true);
         }else{
-            unoBotton.setVisible(false);
-            unoBotton.setManaged(false);
+            System.out.println("Hiding UNO BUTTON");
+            unoButton.setVisible(false);
+            //unoButton.setManaged(false);
 
             unoImageView.setVisible(false);
-            unoImageView.setManaged(false);
+            //unoImageView.setManaged(false);
         }
-
 
     }
 
@@ -374,15 +421,20 @@ public class GameUnoController {
             Card card = this.humanPlayer.getCardsPlayer().get(i);
             if(gameUno.isCardPlayable(card, table.getCurrentCardOnTheTable())){
                 areCardsPlayable = true;
+                showError(errorLabel, "Aún tienes jugadas posibles!");
                 break;
             }
         }
         if(!areCardsPlayable && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
-            gameUno.eatCard(humanPlayer, 1);
+            try {
+                gameUno.eatCard(humanPlayer, 1);
+            }catch (EmptyDeck e){
+                gameHasEndedAlert();
+            }
             saveGameState();
-            showUnoBotton();
-            gameUno.changeTurn();
+            showUnoButton();
             printCardsHumanPlayer();
+            gameUno.changeTurn();
         }
     }
 
@@ -394,13 +446,9 @@ public class GameUnoController {
     @FXML
     void onHandleUno(ActionEvent event) {
         System.out.println("Cantar UNO presionado");
-
-        if(humanPlayer.getCardsPlayer().size() == 1  && !threadSingUnoMachine.getAlreadySangUno()){
-            threadSingUnoMachine.setAlreadySangUno(true);
-            saveGameState();
-        }
-
-        showUnoBotton();
+        threadSingUnoMachine.setAlreadySangUno(true);
+        saveGameState();
+        showUnoButton();
     }
 
     public void saveGameState(){
@@ -437,7 +485,34 @@ public class GameUnoController {
 
             setUnoListener();
             setGameOverListener();
-            showUnoBotton();
+            showUnoButton();
         }
+    }
+
+    /**
+     * Displays an error message using a fading label animation.
+     * The message fades in, stays visible for a short time, then fades out.
+     *
+     * @param label   the label to display the message on
+     * @param message the error message to show
+     */
+    public void showError(Label label, String message) {
+        label.setText(message);
+        label.setOpacity(0);
+        label.setVisible(true);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(0.5), label);
+        fadeIn.setFromValue(0);
+        fadeIn.setToValue(1);
+
+        PauseTransition pause = new PauseTransition(Duration.seconds(1)); //Label stays visible for a second
+
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(0.5), label);
+        fadeOut.setFromValue(1);
+        fadeOut.setToValue(0);
+        fadeOut.setOnFinished(e -> label.setVisible(false)); //Leave label hidden after fade out
+
+        SequentialTransition sequence = new SequentialTransition(fadeIn, pause, fadeOut);
+        sequence.play();
     }
 }

@@ -1,6 +1,8 @@
 package org.example.eiscuno.model.game;
 
 import org.example.eiscuno.model.card.Card;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
+import org.example.eiscuno.model.exceptions.NonPlayableCard;
 import org.example.eiscuno.model.player.Player;
 
 /**
@@ -11,7 +13,7 @@ public interface IGameUno {
     /**
      * Starts the Uno game.
      */
-    void startGame();
+    void startGame() throws EmptyDeck;
 
 
     /**
@@ -20,7 +22,7 @@ public interface IGameUno {
      * @param currentCardOnTable the card compared to
      * @return true if it can be played, false if not
      */
-    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable);
+    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) throws NonPlayableCard;
 
     /**
      * Makes a player draw a specified number of cards from the deck.
@@ -28,12 +30,12 @@ public interface IGameUno {
      * @param player the player who will draw the cards
      * @param numberOfCards the number of cards to be drawn
      */
-    void eatCard(Player player, int numberOfCards);
+    void eatCard(Player player, int numberOfCards) throws EmptyDeck;
 
     /**
      * Put the first card on the table
      */
-    void putFirstCard();
+    void putFirstCard() throws EmptyDeck;
 
 
     /**

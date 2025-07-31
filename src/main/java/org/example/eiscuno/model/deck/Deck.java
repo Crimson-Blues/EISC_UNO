@@ -6,6 +6,7 @@ import org.example.eiscuno.model.card.cardEffect.ColorEffect;
 import org.example.eiscuno.model.card.cardEffect.DrawFourEffect;
 import org.example.eiscuno.model.card.cardEffect.DrawTwoEffect;
 import org.example.eiscuno.model.card.cardEffect.SkipEffect;
+import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
 import java.io.Serializable;
@@ -45,10 +46,7 @@ public class Deck implements Serializable{
                 Card card = new Card(cardEnum.getFilePath(), getCardValue(cardEnum.name()), getCardColor(cardEnum.name()));
             if (card.getValue() != null) {
                 switch (card.getValue()) {
-                    case "REVERSE":
-                        card.setEffect(new SkipEffect());
-                        break;
-                    case "SKIP":
+                    case "REVERSE", "SKIP":
                         card.setEffect(new SkipEffect());
                         break;
                     case "NEWCOLOR":
@@ -117,13 +115,13 @@ public class Deck implements Serializable{
         } else if(name.startsWith("RED")) {
             return "RED";
         } else if (name.endsWith("GREEN")) {
-            return "GREEN";//comer 2
+            return "GREEN";
         } else if (name.endsWith("YELLOW")) {
-            return "YELLOW";//cambiar color
+            return "YELLOW";
         } else if (name.endsWith("BLUE")) {
-            return "BLUE"; //reverse card
+            return "BLUE";
         } else if (name.endsWith("RED")) {
-            return "RED";//bloquear turno
+            return "RED";
         } else {
             return "UNKNOWN";
         }
@@ -135,14 +133,13 @@ public class Deck implements Serializable{
      * @return the card from the top of the deck
      * @throws IllegalStateException if the deck is empty
      */
-    public Card takeCard() {
+    public Card takeCard() throws EmptyDeck {
         if (deckOfCards.isEmpty()) {
 
             if (gameOverListener != null) {
                 gameOverListener.onGameOver();
             }
-
-            throw new IllegalStateException("No hay más cartas en el mazo.");
+            throw new EmptyDeck("No hay más cartas en el mazo");
 
         }
         return deckOfCards.pop();

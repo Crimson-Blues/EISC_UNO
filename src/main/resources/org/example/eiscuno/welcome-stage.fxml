@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="rootPane" prefHeight="650" fx:controller="org.example.eiscuno.controller.WelcomeStageController" prefWidth="730" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane fx:id="rootPane" prefHeight="650" prefWidth="730" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.eiscuno.controller.WelcomeStageController">
 
     <VBox alignment="CENTER" maxWidth="400" spacing="20">
         <ImageView fx:id="logoImage" fitWidth="250" preserveRatio="true">
@@ -21,15 +21,15 @@
             </image>
         </ImageView>
 
-        <Label style="-fx-text-fill: #fff3e0; -fx-font-size: 24px; -fx-font-weight: bold;" />
+        <Label style="-fx-text-fill: #fff3e0; -fx-font-size: 24px; -fx-font-weight: bold;" styleClass="welcome-label" />
 
         <TextField fx:id="usernameField" maxWidth="250" promptText="Type your username" />
 
         <VBox alignment="CENTER" spacing="10">
-            <Button onAction="#onHandlePlayButton" fx:id="playButton" maxWidth="150" text="Play" />
-            <Button onAction="#onHandleContinueButton" fx:id="continueButton" maxWidth="150" text="Continue" />
-            <Button onAction="#onHandleQuitButton" fx:id="quitButton" maxWidth="150" text="Quit Game" />
-            <Button onAction="#onHandleCreditsButton" fx:id="creditsButton" maxWidth="150" text="Credits" />
+            <Button fx:id="playButton" maxWidth="150" onAction="#onHandlePlayButton" styleClass="welcome-button" text="Play" />
+            <Button fx:id="continueButton" maxWidth="150" onAction="#onHandleContinueButton" styleClass="welcome-button" text="Continue" />
+            <Button fx:id="quitButton" maxWidth="150" onAction="#onHandleQuitButton" styleClass="welcome-button" text="Quit Game" />
+            <Button fx:id="creditsButton" maxWidth="150" onAction="#onHandleCreditsButton" styleClass="welcome-button" text="Credits" />
         </VBox>
     </VBox>
 </StackPane>
