@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
-
 import static org.junit.jupiter.api.Assertions.*;
+
 class CardTest {
     @BeforeAll
     public static void initJavaFX() throws InterruptedException {
@@ -35,6 +35,6 @@ class CardTest {
         Card card = new Card(EISCUnoEnum.RED_1.getFilePath(), "1", "RED");
         assertNotNull(card.getCard());
         assertEquals(90, card.getCard().getFitHeight());
-        assertEquals(70, card.getCard().getFitWidth());
+        assertEquals(60, card.getCard().getFitWidth());
     }
 }
