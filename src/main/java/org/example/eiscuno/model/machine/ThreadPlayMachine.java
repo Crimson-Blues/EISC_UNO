@@ -6,9 +6,7 @@ import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.listener.UnoEventListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.exceptions.EmptyDeck;
-import org.example.eiscuno.model.exceptions.NonPlayableCard;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.gameState.GameState;
@@ -102,10 +100,10 @@ public class ThreadPlayMachine extends Thread {
                     String chosenColor = colors.get(random.nextInt(colors.size()));
 
                     System.out.println("[MÁQUINA] Color elegido: " + chosenColor);
-                    card.applyEffect(new CardEffectContext(gameUno, humanPlayer, card, chosenColor));
+                    card.applyEffect(card.new CardEffectContext(gameUno, humanPlayer, chosenColor));
 
                 } else {
-                    card.applyEffect(new CardEffectContext(gameUno, humanPlayer));
+                    card.applyEffect(card.new CardEffectContext(gameUno, humanPlayer));
                 }
 
                 if (card.getEffect() == null) {

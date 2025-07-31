@@ -18,7 +18,6 @@ import javafx.util.Duration;
 import org.example.eiscuno.listener.MachinePlayListener;
 import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.exceptions.EmptyDeck;
 import org.example.eiscuno.model.exceptions.NonPlayableCard;
@@ -162,7 +161,7 @@ public class GameUnoController {
                             color = askColor();
                         }
                         if (card.getEffect() != null) {
-                            card.applyEffect(new CardEffectContext(gameUno, targetPlayer, card, color));
+                            card.applyEffect(card.new CardEffectContext(gameUno, targetPlayer, color));
                         } else {
                             gameUno.changeTurn();
                             System.out.println("Turn: " + gameUno.getTurn());
