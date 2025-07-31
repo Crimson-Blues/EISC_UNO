@@ -5,11 +5,14 @@ import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 
+import java.io.Serializable;
+
 /**
  * Represents a game of Uno.
  * This class manages the game logic and interactions between players, deck, and the table.
  */
-public class GameUno implements IGameUno {
+public class GameUno implements IGameUno, Serializable {
+
     private Player humanPlayer;
     private Player machinePlayer;
     private Deck deck;
@@ -178,5 +181,9 @@ public class GameUno implements IGameUno {
 
         }
         return GameStateEnum.GAME_ONGOING;
+    }
+
+    public Deck getDeck(){
+        return this.deck;
     }
 }

@@ -3,10 +3,12 @@ package org.example.eiscuno.model.machine;
 import javafx.scene.image.ImageView;
 import org.example.eiscuno.listener.GameOverListener;
 import org.example.eiscuno.listener.UnoEventListener;
+import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
 import org.example.eiscuno.model.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
+import org.example.eiscuno.model.gameState.GameState;
 import org.example.eiscuno.model.game.TurnEnum;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
@@ -23,6 +25,9 @@ public class ThreadPlayMachine extends Thread {
     private volatile boolean running;
     private UnoEventListener unoEventListener;
     private GameOverListener gameOverListener;
+    private GameState gameState;
+    private SerializableFileHandler serializableFileHandler;
+
 
     /**
      * Thread responsible for handling the machine player's behavior during the UNO game.
@@ -65,17 +70,8 @@ public class ThreadPlayMachine extends Thread {
      * Stops the execution loop by setting {@code running} to false.
      */
     public void stopThread() {
-        running = false;
+        this.running = false;
     }
-
-    /**
-     * Sets whether the human player has played their turn.
-     *
-     * @param hasPlayerPlayed true if the human has played, false otherwise
-     */
-    //public void setHasPlayerPlayed(Boolean hasPlayerPlayed) {
-        //this.hasPlayerPlayed = hasPlayerPlayed;
-    //}
 
     /**
      * Handles the logic for the machine player to play a card.
@@ -134,6 +130,16 @@ public class ThreadPlayMachine extends Thread {
                 gameUno.changeTurn();
                 System.out.println("No hay cartas jugables.");
             }
+                return;
+            }
+        }
+
+        gameUno.eatCard(playerMachine, 1);
+        System.out.println("No hay cartas jugables.");
+        saveGameState();
+        putCardOnTable();
+
+    }
 
     }
 
@@ -162,8 +168,15 @@ public class ThreadPlayMachine extends Thread {
      *
      * @return true if the human player has played, false otherwise
      */
-    //public boolean getHasPlayerPlayed() {
-        //return hasPlayerPlayed;
-    //}
+    public boolean getHasPlayerPlayed(){
+        return hasPlayerPlayed;
+    }
+
+    public void saveGameState(){
+        serializableFileHandler = new SerializableFileHandler();
+        this.gameState = new GameState(this.gameUno.getDeck(),this.gameUno,this.table,this.humanPlayer,this.playerMachine);
+        serializableFileHandler.serialize("GameState.ser",this.gameState);
+        System.out.println("Saving machine movement...");
+    }
 }
 

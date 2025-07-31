@@ -9,15 +9,16 @@ import org.example.eiscuno.model.cardEffect.DrawTwoEffect;
 import org.example.eiscuno.model.cardEffect.SkipEffect;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Stack;
 
 /**
  * Represents a deck of Uno cards.
  */
-public class Deck {
+public class Deck implements Serializable{
     private Stack<Card> deckOfCards;
-    private GameOverListener gameOverListener;
+    private transient GameOverListener gameOverListener;
 
     /**
      * Constructs a new deck of Uno cards and initializes it.

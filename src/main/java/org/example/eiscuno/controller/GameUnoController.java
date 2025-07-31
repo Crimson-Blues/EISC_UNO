@@ -10,18 +10,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import org.example.eiscuno.model.Serializable.SerializableFileHandler;
 import org.example.eiscuno.model.card.Card;
-import org.example.eiscuno.model.cardEffect.CardEffectContext;
+import org.example.eiscuno.model.card.cardEffect.CardEffectContext;
 import org.example.eiscuno.model.deck.Deck;
 import org.example.eiscuno.model.game.GameStateEnum;
 import org.example.eiscuno.model.game.GameUno;
 import org.example.eiscuno.model.game.TurnEnum;
+import org.example.eiscuno.model.gameState.GameState;
 import org.example.eiscuno.model.machine.ThreadPlayMachine;
 import org.example.eiscuno.model.machine.ThreadSingUnoMachine;
 import org.example.eiscuno.model.player.Player;
 import org.example.eiscuno.model.table.Table;
 import org.example.eiscuno.model.unoenum.EISCUnoEnum;
+import org.example.eiscuno.view.WelcomeStage;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,26 +66,40 @@ public class GameUnoController {
     private Thread threadSingUno;
 
 
+    private GameState gameState;
+    private Boolean isContinue;
+    private SerializableFileHandler serializableFileHandler;
+
     /**
      * Initializes the controller.
      */
     @FXML
-    public void initialize() {
-        initVariables();
-        this.gameUno.startGame();
-        printCardsHumanPlayer();
-        printCardsMachinePlayer();
-        threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
-        threadPlayMachine.start();
+    public void initialize() throws IOException {
+        //initVariables();
+        isContinue = WelcomeStage.getInstance().getWelcomeStageController().returnIsContinue();
+        WelcomeStage.deleteInstance();
+        serializableFileHandler = new SerializableFileHandler();
 
-        threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
-        threadSingUno =  new Thread(threadSingUnoMachine);
-        threadSingUno.setDaemon(true);
-        threadSingUno.start();
+        if(!isContinue){
+            initVariables();
+            this.gameUno.startGame();
+            printCardsHumanPlayer();
+            printCardsMachinePlayer();
+            threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
+            threadPlayMachine.start();
 
-        setUnoListener();
-        setGameOverListener();
-        showUnoBotton();
+            threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
+            threadSingUno = new Thread(threadSingUnoMachine);
+            threadSingUno.setDaemon(true);
+            threadSingUno.start();
+
+            setUnoListener();
+            setGameOverListener();
+            showUnoBotton();
+        }
+        else{
+            loadGameState();
+        }
     }
 
     /**
@@ -135,6 +153,7 @@ public class GameUnoController {
                         System.out.println("Turn: " + gameUno.getTurn());
                     }
                     gameUno.playCard(card);
+                    saveGameState();
                     tableImageView.setImage(card.getImage());
                     humanPlayer.removeCard(findPosCardsHumanPlayer(card));
                     printCardsHumanPlayer();
@@ -360,6 +379,7 @@ public class GameUnoController {
         }
         if(!areCardsPlayable && gameUno.isGameOver() == GameStateEnum.GAME_ONGOING){
             gameUno.eatCard(humanPlayer, 1);
+            saveGameState();
             showUnoBotton();
             gameUno.changeTurn();
             printCardsHumanPlayer();
@@ -377,13 +397,47 @@ public class GameUnoController {
 
         if(humanPlayer.getCardsPlayer().size() == 1  && !threadSingUnoMachine.getAlreadySangUno()){
             threadSingUnoMachine.setAlreadySangUno(true);
+            saveGameState();
         }
 
         showUnoBotton();
     }
 
-    ThreadPlayMachine getThreadPlayMachine() {
-        return threadPlayMachine;
+    public void saveGameState(){
+        System.out.println("Saving gameState...");
+        this.gameState = new GameState(this.deck,this.gameUno,this.table,this.humanPlayer,this.machinePlayer);
+        serializableFileHandler.serialize("GameState.ser", gameState);
     }
 
+    public void loadGameState(){
+        System.out.println("Loading gameState...");
+        this.gameState = (GameState) serializableFileHandler.deserialize("GameState.ser");
+        if(gameState != null){
+            this.deck = gameState.getDeck();
+            this.gameUno = gameState.getGameUno();
+            this.table = gameState.getTable();
+            this.humanPlayer = gameState.getHumanPlayer();
+            this.machinePlayer = gameState.getMachinePlayer();
+
+            printCardsHumanPlayer();
+            printCardsMachinePlayer();
+
+            Card cardOnTable = table.getCurrentCardOnTheTable();
+            if (cardOnTable != null) {
+                tableImageView.setImage(cardOnTable.getImage());
+            }
+
+            threadPlayMachine = new ThreadPlayMachine(this.table, this.machinePlayer, this.tableImageView, this.gameUno, this.humanPlayer);
+            threadPlayMachine.start();
+
+            threadSingUnoMachine = new ThreadSingUnoMachine(this.humanPlayer, this.gameUno);
+            threadSingUno = new Thread(threadSingUnoMachine);
+            threadSingUno.setDaemon(true);
+            threadSingUno.start();
+
+            setUnoListener();
+            setGameOverListener();
+            showUnoBotton();
+        }
+    }
 }

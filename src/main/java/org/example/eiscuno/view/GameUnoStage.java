@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.eiscuno.controller.WelcomeStageController;
 
 import java.io.IOException;
 
@@ -12,7 +13,6 @@ import java.io.IOException;
  * This stage displays the game interface to the user.
  */
 public class GameUnoStage extends Stage {
-
     /**
      * Constructs a new instance of GameUnoStage.
      *
