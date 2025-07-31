@@ -10,11 +10,12 @@ import org.example.eiscuno.model.table.Table;
  * This class manages the game logic and interactions between players, deck, and the table.
  */
 public class GameUno implements IGameUno {
-
     private Player humanPlayer;
     private Player machinePlayer;
     private Deck deck;
     private Table table;
+    private volatile TurnEnum turn;
+
 
     /**
      * Constructs a new GameUno instance.
@@ -29,6 +30,7 @@ public class GameUno implements IGameUno {
         this.machinePlayer = machinePlayer;
         this.deck = deck;
         this.table = table;
+        this.turn = TurnEnum.PLAYER;
     }
 
     /**
@@ -37,6 +39,7 @@ public class GameUno implements IGameUno {
      */
     @Override
     public void startGame() {
+        //Reparte las cartas iniciales al jugador humano y máquina
         for (int i = 0; i < 10; i++) {
             if (i < 5) {
                 humanPlayer.addCard(this.deck.takeCard());
@@ -44,6 +47,33 @@ public class GameUno implements IGameUno {
                 machinePlayer.addCard(this.deck.takeCard());
             }
         }
+        putFirstCard();
+    }
+
+    /**
+     * Verifies is a card satisfy the game rules
+     * @param cardToPlay the card being played
+     * @param currentCardOnTable the card compared to
+     * @return true if it can be played, false if not
+     */
+    @Override
+    public boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) {
+        // Si la mesa está vacía (inicio del juego), cualquier carta es válida.
+        if (currentCardOnTable == null) {
+            return true;
+        }
+
+        // Coincidencia en color o valor
+        boolean colorMatch = cardToPlay.getColor().equals(currentCardOnTable.getColor());
+        System.out.println(colorMatch);
+        boolean valueMatch = cardToPlay.getValue().equals(currentCardOnTable.getValue());
+        System.out.println(valueMatch);
+
+        // Cartas especiales (como "WILD" o "+4") pueden jugarse en cualquier momento
+        boolean isSpecialCard = cardToPlay.getValue().equals("NEWCOLOR") ||
+                cardToPlay.getValue().equals("EAT4");
+
+        return colorMatch || valueMatch || isSpecialCard;
     }
 
     /**
@@ -60,6 +90,19 @@ public class GameUno implements IGameUno {
     }
 
     /**
+     * Put the first card on the table
+     */
+    @Override
+    public void putFirstCard(){
+        Card cardToPlay = this.deck.viewCard();
+        while(cardToPlay.getEffect() != null) {
+            this.deck.shuffle();
+            cardToPlay = this.deck.viewCard();
+        }
+        playCard(this.deck.takeCard());
+    }
+
+    /**
      * Places a card on the table during the game.
      *
      * @param card The card to be placed on the table.
@@ -67,6 +110,22 @@ public class GameUno implements IGameUno {
     @Override
     public void playCard(Card card) {
         this.table.addCardOnTheTable(card);
+    }
+
+    @Override
+    public void changeTurn() {
+        if(turn ==  TurnEnum.PLAYER) {
+            turn = TurnEnum.MACHINE;
+        } else if(turn ==  TurnEnum.MACHINE) {
+            turn = TurnEnum.PLAYER;
+        }
+    }
+
+    public TurnEnum getTurn() {
+        return turn;
+    }
+    public void setTurn(TurnEnum turn) {
+        this.turn = turn;
     }
 
     /**
@@ -105,10 +164,19 @@ public class GameUno implements IGameUno {
     /**
      * Checks if the game is over.
      *
-     * @return True if the deck is empty, indicating the game is over; otherwise, false.
+     * @return 0 if the game is not over, 1 if the deck is empty, 2 if the human player has
+     * played all his card or 3 if the machine player has played all his cards.
      */
     @Override
-    public Boolean isGameOver() {
-        return null;
+    public GameStateEnum isGameOver() {
+        if(deck.isEmpty()){
+            return GameStateEnum.DECK_EMPTY;
+        } else if (humanPlayer.getCardsPlayer().isEmpty()) {
+            return GameStateEnum.PLAYER_WON;
+        } else if (machinePlayer.getCardsPlayer().isEmpty()) {
+            return GameStateEnum.MACHINE_WON;
+
+        }
+        return GameStateEnum.GAME_ONGOING;
     }
 }
