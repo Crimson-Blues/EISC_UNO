@@ -45,7 +45,6 @@ public class WelcomeStage extends Stage{
      *     <li>Applying a window icon using {@link Image}</li>
      *     <li>Displaying the {@link Stage} immediately</li>
      * </ul>
-     * </p>
      *
      * @throws IOException if there is an error while loading the FXML file or its resources.
      */

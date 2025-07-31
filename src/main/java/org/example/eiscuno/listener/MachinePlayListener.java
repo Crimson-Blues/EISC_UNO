@@ -17,7 +17,6 @@ public interface MachinePlayListener {
      *     <li>Update the UI to reflect the machine's new hand size.</li>
      *     <li>Trigger animations or sounds for drawing a card.</li>
      * </ul>
-     * </p>
      */
     void onMachineDrewCard();
     /**
@@ -29,7 +28,6 @@ public interface MachinePlayListener {
      *     <li>Advance the turn to the next player.</li>
      *     <li>Trigger any UI feedback or animations.</li>
      * </ul>
-     * </p>
      */
     void onMachinePlayed();
 }

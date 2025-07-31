@@ -2,7 +2,6 @@ package org.example.eiscuno.model.player;
 
 import org.example.eiscuno.model.card.Card;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -10,16 +9,19 @@ import java.util.ArrayList;
  * Represents a player in the Uno game.
  */
 public class Player implements IPlayer, Serializable {
+    /** Represents the current hand of cards for a player.*/
     private ArrayList<Card> cardsPlayer;
+    /** Represents the kind of player: human or machine.*/
     private String typePlayer;
 
     /**
      * Constructs a new Player object with an empty hand of cards.
+     * @param typePlayer The kind of player created, human or machine.
      */
     public Player(String typePlayer){
         this.cardsPlayer = new ArrayList<Card>();
         this.typePlayer = typePlayer;
-    };
+    }
 
     /**
      * Adds a card to the player's hand.

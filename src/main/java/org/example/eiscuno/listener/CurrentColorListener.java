@@ -9,7 +9,6 @@ package org.example.eiscuno.listener;
  *     <li>A color-changing card (e.g., Wild or +4) is played.</li>
  *     <li>A card of a different color is placed on the table.</li>
  * </ul>
- * </p>
  */
 public interface CurrentColorListener {
     /**

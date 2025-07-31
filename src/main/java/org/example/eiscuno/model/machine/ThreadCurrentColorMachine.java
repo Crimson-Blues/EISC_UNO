@@ -36,6 +36,8 @@ public class ThreadCurrentColorMachine implements Runnable{
     /**
      * Thread responsible for saving the current color of the card.
      * It periodically checks whether the color of the previous and the current cards have changed, and if so it saves it.
+     * @param gameUno The game currently being played.
+     * @param table The table from the currently played game.
      */
     public ThreadCurrentColorMachine(GameUno gameUno, Table table) {
         this.gameUno = gameUno;

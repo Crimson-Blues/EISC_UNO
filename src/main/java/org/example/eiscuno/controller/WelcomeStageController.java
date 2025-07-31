@@ -2,16 +2,13 @@ package org.example.eiscuno.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
 import org.example.eiscuno.model.planeTextFiles.PlaneTextFileHandler;
 import org.example.eiscuno.view.GameUnoStage;
 import org.example.eiscuno.view.WelcomeStage;
 
 import java.io.IOException;
-import java.util.Stack;
 
 /**
  * Controller for the Welcome Stage of the Uno game.
@@ -23,7 +20,6 @@ import java.util.Stack;
  *     <li>Quit the application.</li>
  *     <li>Access credits (future implementation).</li>
  * </ul>
- * </p>
  */
 public class WelcomeStageController {
 
@@ -46,7 +42,7 @@ public class WelcomeStageController {
      * Handles the "Play" button click event.
      * <p>
      * Starts a new game if a username is entered, otherwise shows a warning alert.
-     * </p>
+     * @throws IOException If the plain text file fails to load.
      */
     @FXML
     public void onHandlePlayButton() throws IOException {
@@ -70,7 +66,7 @@ public class WelcomeStageController {
      * Handles the "Continue" button click event.
      * <p>
      * Attempts to resume a previous game session.
-     * </p>
+     * @throws IOException If the saving files fail to load.
      */
     @FXML
     public void onHandleContinueButton() throws IOException {

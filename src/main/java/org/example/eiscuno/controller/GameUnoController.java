@@ -143,6 +143,7 @@ public class GameUnoController {
 
     /**
      * Initializes the controller when the FXML scene loads.
+     * @throws IOException if the save state files fail to load correctly.
      */
     @FXML
     public void initialize() throws IOException {
@@ -178,9 +179,7 @@ public class GameUnoController {
 
             setMachineListener();
             showUnoButton();
-            printCardsHumanPlayer();
-            printCardsMachinePlayer();
-            updateLabels();
+            refreshUI();
 
         }
         else{

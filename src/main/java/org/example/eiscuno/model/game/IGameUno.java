@@ -12,6 +12,7 @@ public interface IGameUno {
 
     /**
      * Starts the Uno game.
+     * @throws EmptyDeck if the deck empties during the initial dealing process.
      */
     void startGame() throws EmptyDeck;
 
@@ -22,18 +23,20 @@ public interface IGameUno {
      * @param currentCardOnTable the card compared to
      * @return true if it can be played, false if not
      */
-    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable) throws NonPlayableCard;
+    boolean isCardPlayable(Card cardToPlay, Card currentCardOnTable);
 
     /**
      * Makes a player draw a specified number of cards from the deck.
      *
      * @param player the player who will draw the cards
      * @param numberOfCards the number of cards to be drawn
+     * @throws EmptyDeck if the deck is empty.
      */
     void eatCard(Player player, int numberOfCards) throws EmptyDeck;
 
     /**
      * Put the first card on the table
+     * @throws EmptyDeck if there are no cards in the deck.
      */
     void putFirstCard() throws EmptyDeck;
 

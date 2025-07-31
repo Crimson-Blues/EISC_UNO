@@ -10,7 +10,6 @@ package org.example.eiscuno.listener;
  *     <li>The human player wins by playing all their cards.</li>
  *     <li>The machine player wins by playing all their cards.</li>
  * </ul>
- * </p>
  */
 public interface GameOverListener {
 

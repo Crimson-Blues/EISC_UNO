@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * Represents the table in the Uno game where cards are played.
  */
 public class Table implements Serializable{
+    /** Represents the played cards on the current table. */
     private ArrayList<Card> cardsTable;
 
     /**
