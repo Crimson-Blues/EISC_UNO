@@ -3,6 +3,7 @@ package org.example.eiscuno.view;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.example.eiscuno.controller.WelcomeStageController;
 
@@ -23,6 +24,9 @@ public class WelcomeStage extends Stage{
         welcomeStageController = fxmlLoader.getController();
         Scene scene = new Scene(root);
         setTitle("Welcome");
+
+        getIcons().add(
+                new Image(String.valueOf(getClass().getResource("/org/example/eiscuno/favicon.png"))));
         setScene(scene);
         setResizable(false);
         show();

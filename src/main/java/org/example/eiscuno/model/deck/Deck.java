@@ -28,6 +28,13 @@ public class Deck implements Serializable{
         initializeDeck();
     }
 
+    /**
+     * Return the full deck of cards for testing purposes
+     * @return the deck of cards
+     */
+    Stack<Card> getDeckOfCards() {
+        return deckOfCards;
+    }
 
     /**
      * Initializes the deck with cards based on the EISCUnoEnum values.
